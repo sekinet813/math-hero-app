@@ -33,6 +33,12 @@ class AppConstants {
   static const int kMinNumber = 1;
   static const int kMaxNumber = 20;
 
+  // 計算問題設定
+  static const int kMaxOperand = 99;
+  static const int kMinOperand = 1;
+  static const int kMaxAnswer = 999;
+  static const int kChoiceCount = 4;
+
   // データベース
   static const String kDatabaseName = 'math_hero.db';
   static const int kDatabaseVersion = 1;
