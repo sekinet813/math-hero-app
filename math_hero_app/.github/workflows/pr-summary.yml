@@ -1,0 +1,69 @@
+name: PR Auto Comment Bot
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+      - name: Generate PR summary
+        id: generate
+        run: |
+          echo "### 📦 PR概要" > summary.txt
+          echo "${{ github.event.pull_request.title }}" >> summary.txt
+          echo "" >> summary.txt
+
+          echo "### 🧭 変更内容サマリー" >> summary.txt
+          echo "- ${GITHUB_ACTOR} による自動投稿" >> summary.txt
+          echo "- 内容はファイル差分ベースです（詳細はPR本文へ記載推奨）" >> summary.txt
+          echo "" >> summary.txt
+
+          echo "### 📁 変更ファイル一覧" >> summary.txt
+          git diff --name-only origin/${{ github.base_ref }}...HEAD >> summary.txt
+          echo "" >> summary.txt
+
+          echo "### 🔧 PR Auto Summary" >> summary.txt
+          echo '```' >> summary.txt
+          git diff --stat origin/${{ github.base_ref }}...HEAD >> summary.txt
+          echo '```' >> summary.txt
+          echo "" >> summary.txt
+
+          echo "### 🏷️ 関連Issue" >> summary.txt
+          echo "- 推定: $(echo '${{ github.head_ref }}' | grep -Eo '[A-Z]+-[0-9]+' || echo 'なし')" >> summary.txt
+          echo "" >> summary.txt
+
+          echo "### ✅ テスト状況" >> summary.txt
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -qE 'tests/|\.test\.'; then
+            echo "- ✅ テストファイルが変更されています" >> summary.txt
+          else
+            echo "- ⚠️ テストファイルは検出されませんでした" >> summary.txt
+          fi
+          echo "" >> summary.txt
+
+          echo "### 💥 影響範囲（予測）" >> summary.txt
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "- UI: $(echo "$FILES" | grep -q 'components/' && echo '✅' || echo '❌')" >> summary.txt
+          echo "- ロジック: $(echo "$FILES" | grep -q 'utils/' && echo '✅' || echo '❌')" >> summary.txt
+          echo "- テスト: $(echo "$FILES" | grep -qE 'tests/|\.test\.' && echo '✅' || echo '❌')" >> summary.txt
+          echo "- DB: $(echo "$FILES" | grep -q 'migrations/' && echo '✅' || echo '❌')" >> summary.txt
+          echo "" >> summary.txt
+
+          echo "### 🔀 マージ先ブランチ" >> summary.txt
+          echo "- ${{ github.base_ref }} ← ${{ github.head_ref }}" >> summary.txt
+          echo "" >> summary.txt
+
+      - name: Post summary comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: summary.txt
