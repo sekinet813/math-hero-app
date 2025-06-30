@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:math_hero_app/screens/game_play_screen.dart';
 import 'package:math_hero_app/providers/game_provider.dart';
 import 'package:math_hero_app/utils/math_problem_generator.dart';
-import 'package:math_hero_app/widgets/correct_answer_overlay.dart';
 import 'package:math_hero_app/widgets/game_header.dart';
 import 'package:math_hero_app/widgets/problem_display.dart';
 
