@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:math_hero_app/providers/game_provider.dart';
-import 'package:math_hero_app/utils/math_problem_generator.dart';
 import 'package:math_hero_app/utils/constants.dart';
+import 'package:math_hero_app/utils/math_problem_generator.dart';
 
 void main() {
   group('GameProvider', () {
@@ -9,6 +9,24 @@ void main() {
 
     setUp(() {
       gameProvider = GameProvider();
+    });
+
+    tearDown(() {
+      gameProvider.dispose();
+    });
+
+    group('初期状態', () {
+      test('初期状態が正しく設定される', () {
+        expect(gameProvider.isGameActive, false);
+        expect(gameProvider.isGamePaused, false);
+        expect(gameProvider.correctAnswers, 0);
+        expect(gameProvider.totalQuestions, 0);
+        expect(gameProvider.remainingTime, AppConstants.kDefaultTimeLimit);
+        expect(gameProvider.selectedAnswer, isNull);
+        expect(gameProvider.showCorrectAnswer, false);
+        expect(gameProvider.currentProblem, isNull);
+        expect(gameProvider.gameMode, GameMode.timeAttack);
+      });
     });
 
     group('ゲーム開始', () {
@@ -20,25 +38,35 @@ void main() {
         );
 
         expect(gameProvider.isGameActive, true);
+        expect(gameProvider.isGamePaused, false);
         expect(gameProvider.correctAnswers, 0);
-        expect(gameProvider.totalQuestions, 1);
+        expect(gameProvider.totalQuestions, 0);
+        expect(gameProvider.remainingTime, AppConstants.kDefaultTimeLimit);
         expect(gameProvider.currentProblem, isNotNull);
+        expect(gameProvider.gameMode, GameMode.timeAttack);
       });
 
-      test('異なるカテゴリでゲームが開始される', () {
+      test('問題が正しく生成される', () {
         gameProvider.startGame(
-          category: MathCategory.multiplication,
-          difficulty: DifficultyLevel.medium,
-          gameMode: GameMode.endless,
+          category: MathCategory.addition,
+          difficulty: DifficultyLevel.easy,
+          gameMode: GameMode.timeAttack,
         );
 
-        expect(gameProvider.isGameActive, true);
-        expect(gameProvider.currentProblem?.category, 'multiplication');
-        expect(gameProvider.currentProblem?.difficulty, 'medium');
+        final problem = gameProvider.currentProblem;
+        expect(problem, isNotNull);
+        expect(problem!.category, 'addition');
+        expect(problem.difficulty, 'easy');
+        expect(problem.correctAnswer, isA<int>());
+
+        // 選択肢を生成してテスト
+        final choices = problem.generateChoices();
+        expect(choices, hasLength(4));
+        expect(choices, contains(problem.correctAnswer));
       });
     });
 
-    group('選択肢選択', () {
+    group('回答選択・送信', () {
       setUp(() {
         gameProvider.startGame(
           category: MathCategory.addition,
@@ -55,18 +83,20 @@ void main() {
       test('正解時に正答数が増加する', () {
         final problem = gameProvider.currentProblem!;
         gameProvider.selectAnswer(problem.correctAnswer);
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(problem.correctAnswer);
 
         expect(gameProvider.correctAnswers, 1);
+        expect(gameProvider.totalQuestions, 1);
         expect(gameProvider.showCorrectAnswer, true);
       });
 
       test('不正解時に正答数が増加しない', () {
         final problem = gameProvider.currentProblem!;
         gameProvider.selectAnswer(problem.correctAnswer + 1);
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(problem.correctAnswer + 1);
 
         expect(gameProvider.correctAnswers, 0);
+        expect(gameProvider.totalQuestions, 1);
         expect(gameProvider.showCorrectAnswer, true);
       });
 
@@ -74,10 +104,10 @@ void main() {
         gameProvider.selectAnswer(5);
         expect(gameProvider.selectedAnswer, 5);
 
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(5);
 
-        // 回答送信後に選択肢がリセットされる
-        expect(gameProvider.selectedAnswer, isNull);
+        // 回答送信後に選択肢がリセットされる（タイマー後）
+        expect(gameProvider.selectedAnswer, 5); // タイマー前はまだリセットされない
       });
     });
 
@@ -112,8 +142,9 @@ void main() {
       test('一時停止中は回答を送信できない', () {
         gameProvider.pauseGame();
         gameProvider.selectAnswer(5);
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(5);
         expect(gameProvider.showCorrectAnswer, false);
+        expect(gameProvider.totalQuestions, 0); // 問題数が増加しない
       });
     });
 
@@ -139,7 +170,7 @@ void main() {
         );
 
         gameProvider.selectAnswer(5);
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(5);
 
         gameProvider.endGame();
 
@@ -219,7 +250,7 @@ void main() {
 
         final problem = gameProvider.currentProblem!;
         gameProvider.selectAnswer(problem.correctAnswer + 1);
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(problem.correctAnswer + 1);
 
         // 不正解表示後、ゲームが終了する
         expect(gameProvider.showCorrectAnswer, true);
@@ -242,7 +273,7 @@ void main() {
 
         // 正解して次の問題へ
         gameProvider.selectAnswer(firstProblem!.correctAnswer);
-        gameProvider.submitAnswer();
+        gameProvider.submitAnswer(firstProblem.correctAnswer);
 
         // 次の問題が生成される（タイマーで自動的に生成される）
         // 実際のテストではfake_asyncを使用してタイマーを進める

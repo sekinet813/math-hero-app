@@ -30,7 +30,7 @@ void main() {
       expect(find.byType(GamePlayScreen), findsOneWidget);
 
       // 選択肢をタップ
-      final choiceButtons = find.byType(ElevatedButton);
+      final choiceButtons = find.byType(FilledButton);
       if (choiceButtons.evaluate().isNotEmpty) {
         await tester.tap(choiceButtons.first);
         await tester.pump();
@@ -68,7 +68,7 @@ void main() {
       expect(find.byType(GamePlayScreen), findsOneWidget);
 
       // 選択肢をタップ
-      final choiceButtons = find.byType(ElevatedButton);
+      final choiceButtons = find.byType(FilledButton);
       if (choiceButtons.evaluate().isNotEmpty) {
         await tester.tap(choiceButtons.first);
         await tester.pump();

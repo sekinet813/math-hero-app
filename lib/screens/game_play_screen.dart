@@ -107,7 +107,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
                       onAnswerSelected: (answer) {
                         gameProvider.selectAnswer(answer);
                         // 選択と同時に回答を送信
-                        gameProvider.submitAnswer();
+                        gameProvider.submitAnswer(answer);
                       },
                       onAnimationComplete: () {},
                     ),

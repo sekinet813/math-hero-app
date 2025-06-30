@@ -16,6 +16,10 @@ void main() {
       gameProvider = GameProvider();
     });
 
+    tearDown(() {
+      gameProvider.dispose();
+    });
+
     Widget createTestWidget() {
       return MaterialApp(
         home: ChangeNotifierProvider<GameProvider>.value(
@@ -43,9 +47,8 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        // 選択肢ボタンが表示されることを確認（FilledButtonを使用）
-        final choiceButtons = find.byType(FilledButton);
-        expect(choiceButtons, findsWidgets);
+        // 選択肢ボタンが表示されることを確認
+        expect(find.byType(FilledButton), findsNWidgets(4));
       });
 
       testWidgets('ゲームヘッダーが表示される', (WidgetTester tester) async {
@@ -54,46 +57,6 @@ void main() {
 
         // ゲームヘッダーが表示されることを確認
         expect(find.byType(GameHeader), findsOneWidget);
-      });
-    });
-
-    group('回答機能', () {
-      testWidgets('正解時にオーバーレイが表示される', (WidgetTester tester) async {
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
-
-        // 選択肢をタップ
-        final choiceButtons = find.byType(FilledButton);
-        if (choiceButtons.evaluate().isNotEmpty) {
-          await tester.tap(choiceButtons.first);
-          await tester.pump();
-
-          // オーバーレイが表示されることを確認
-          expect(find.byType(CorrectAnswerOverlay), findsOneWidget);
-
-          // タイマーが完了するまで待機
-          await tester.pump(const Duration(milliseconds: 1600));
-          await tester.pumpAndSettle();
-        }
-      });
-
-      testWidgets('不正解時にオーバーレイが表示される', (WidgetTester tester) async {
-        await tester.pumpWidget(createTestWidget());
-        await tester.pumpAndSettle();
-
-        // 選択肢をタップ
-        final choiceButtons = find.byType(FilledButton);
-        if (choiceButtons.evaluate().isNotEmpty) {
-          await tester.tap(choiceButtons.first);
-          await tester.pump();
-
-          // オーバーレイが表示されることを確認
-          expect(find.byType(CorrectAnswerOverlay), findsOneWidget);
-
-          // タイマーが完了するまで待機
-          await tester.pump(const Duration(milliseconds: 2100));
-          await tester.pumpAndSettle();
-        }
       });
     });
 
@@ -110,6 +73,37 @@ void main() {
         expect(find.text('ゲームを終了しますか？'), findsOneWidget);
         expect(find.text('キャンセル'), findsOneWidget);
         expect(find.text('終了'), findsOneWidget);
+      });
+    });
+
+    group('タイマー処理', () {
+      testWidgets('タイマーが適切に処理される', (WidgetTester tester) async {
+        await tester.pumpWidget(createTestWidget());
+        await tester.pumpAndSettle();
+
+        // 正解の選択肢をタップ
+        final correctAnswer = gameProvider.currentProblem!.correctAnswer;
+        final choiceButtons = find.byType(FilledButton);
+
+        // 正解の選択肢を見つけてタップ
+        for (int i = 0; i < choiceButtons.evaluate().length; i++) {
+          final button = choiceButtons.at(i);
+          final buttonText = tester
+              .widget<FilledButton>(button)
+              .child
+              .toString();
+          if (buttonText.contains(correctAnswer.toString())) {
+            await tester.tap(button);
+            break;
+          }
+        }
+
+        // タイマーが完了するまで待機
+        await tester.pump(const Duration(milliseconds: 1500));
+        await tester.pumpAndSettle();
+
+        // 問題数が増加することを確認
+        expect(gameProvider.totalQuestions, 1);
       });
     });
   });

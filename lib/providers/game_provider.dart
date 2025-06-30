@@ -26,6 +26,7 @@ class GameProvider extends ChangeNotifier {
 
   // タイマー管理
   Timer? _answerTimer;
+  Timer? _feedbackTimer;
 
   // ゲッター
   MathCategory get selectedCategory => _selectedCategory;
@@ -79,8 +80,7 @@ class GameProvider extends ChangeNotifier {
     _isGamePaused = false;
     _selectedAnswer = null;
     _showCorrectAnswer = false;
-    _answerTimer?.cancel();
-    _answerTimer = null;
+    _cancelAllTimers();
     notifyListeners();
   }
 
@@ -102,7 +102,6 @@ class GameProvider extends ChangeNotifier {
         difficulty: 'easy',
       );
 
-      _totalQuestions++;
       _selectedAnswer = null;
       _showCorrectAnswer = false;
     } catch (e) {
@@ -115,10 +114,14 @@ class GameProvider extends ChangeNotifier {
         category: 'addition',
         difficulty: 'easy',
       );
-      _totalQuestions++;
       _selectedAnswer = null;
       _showCorrectAnswer = false;
     }
+  }
+
+  /// 次の問題を生成
+  void _generateNextProblem() {
+    _generateNewProblem();
   }
 
   /// 選択肢を選択
@@ -129,48 +132,48 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 回答を送信
-  void submitAnswer() {
-    if (!_isGameActive || _isGamePaused || _selectedAnswer == null) return;
+  /// 回答を送信する
+  void submitAnswer(int answer) {
+    if (!_isGameActive || _currentProblem == null || _isGamePaused) return;
 
-    final isCorrect = _selectedAnswer == _currentProblem!.correctAnswer;
+    _selectedAnswer = answer;
+    _totalQuestions++; // 問題数を増加
+    final isCorrect = answer == _currentProblem!.correctAnswer;
 
     if (isCorrect) {
       _correctAnswers++;
       _showCorrectAnswer = true;
 
-      // 正解時のアニメーション表示後、次の問題へ
-      _answerTimer?.cancel();
-      _answerTimer = Timer(const Duration(milliseconds: 1500), () {
-        if (_isGameActive && !_isGamePaused) {
-          _generateNewProblem();
+      // 正解時のタイマー
+      _cancelFeedbackTimer();
+      _feedbackTimer = Timer(const Duration(milliseconds: 1500), () {
+        if (_isGameActive) {
+          _showCorrectAnswer = false;
+          _selectedAnswer = null;
+          _generateNextProblem();
           notifyListeners();
         }
       });
     } else {
-      // 不正解の場合は正解を表示
       _showCorrectAnswer = true;
 
-      // エンドレスモードの場合はゲーム終了
-      if (_gameMode == GameMode.endless) {
-        _answerTimer?.cancel();
-        _answerTimer = Timer(const Duration(milliseconds: 2000), () {
-          endGame();
-        });
-      } else {
-        // タイムアタックモードの場合は次の問題へ
-        _answerTimer?.cancel();
-        _answerTimer = Timer(const Duration(milliseconds: 2000), () {
-          if (_isGameActive && !_isGamePaused) {
-            _generateNewProblem();
-            notifyListeners();
+      // 不正解時のタイマー
+      _cancelFeedbackTimer();
+      _feedbackTimer = Timer(const Duration(milliseconds: 2000), () {
+        if (_isGameActive) {
+          _showCorrectAnswer = false;
+          _selectedAnswer = null;
+
+          if (_gameMode == GameMode.endless) {
+            endGame();
+          } else {
+            _generateNextProblem();
           }
-        });
-      }
+          notifyListeners();
+        }
+      });
     }
 
-    // 回答送信後に選択肢をリセット
-    _selectedAnswer = null;
     notifyListeners();
   }
 
@@ -192,9 +195,22 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// フィードバックタイマーをキャンセル
+  void _cancelFeedbackTimer() {
+    _feedbackTimer?.cancel();
+    _feedbackTimer = null;
+  }
+
+  /// すべてのタイマーをキャンセル
+  void _cancelAllTimers() {
+    _answerTimer?.cancel();
+    _answerTimer = null;
+    _cancelFeedbackTimer();
+  }
+
   @override
   void dispose() {
-    _answerTimer?.cancel();
+    _cancelAllTimers();
     super.dispose();
   }
 }
