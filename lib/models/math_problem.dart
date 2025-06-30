@@ -46,8 +46,21 @@ class MathProblem {
     // 4つに満たない場合はランダムな値を追加
     while (choices.length < 4) {
       final randomChoice = correctAnswer + (choices.length * 3);
-      if (!choices.contains(randomChoice)) {
+      if (!choices.contains(randomChoice) && randomChoice >= 0) {
         choices.add(randomChoice);
+      } else {
+        // 負の値にならないように調整
+        final fallbackChoice = correctAnswer + choices.length;
+        if (!choices.contains(fallbackChoice)) {
+          choices.add(fallbackChoice);
+        }
+      }
+    }
+
+    // 確実に4つの選択肢があることを保証
+    if (choices.length < 4) {
+      for (int i = choices.length; i < 4; i++) {
+        choices.add(correctAnswer + i + 1);
       }
     }
 

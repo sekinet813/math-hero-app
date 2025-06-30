@@ -4,6 +4,7 @@ class AppConstants {
   AppConstants._();
 
   // スペーシング
+  static const double kSpacing4 = 4.0;
   static const double kSpacing8 = 8.0;
   static const double kSpacing12 = 12.0;
   static const double kSpacing16 = 16.0;

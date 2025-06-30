@@ -1,6 +1,6 @@
-name: Flutter Tests & Coverage
+name: CI
 
-on: 
+on:
   push:
     branches: [ main, develop ]
   pull_request:
@@ -13,7 +13,8 @@ permissions:
   issues: write
 
 jobs:
-  test:
+  # 基本的なCIジョブ
+  ci:
     runs-on: ubuntu-latest
     
     steps:
@@ -22,14 +23,25 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
+        flutter-version: '3.32.5'
         channel: 'stable'
     
     - name: Install dependencies
       run: flutter pub get
     
+    - name: Analyze project source
+      run: flutter analyze
+    
+    - name: Format check
+      run: dart format --set-exit-if-changed .
+    
     - name: Run tests
       run: flutter test
-
+    
+    - name: Build APK
+      run: flutter build apk
+    
+  # テストとカバレッジジョブ
   test-coverage:
     runs-on: ubuntu-latest
     
@@ -42,19 +54,14 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.32.5'
           channel: 'stable'
-          
+
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov
         
       - name: Install dependencies
         run: flutter pub get
-        
-      - name: Analyze code
-        run: flutter analyze
-        
-      - name: Format check
-        run: dart format --set-exit-if-changed .
         
       - name: Run tests with coverage
         id: run-tests
@@ -120,6 +127,7 @@ jobs:
           ### 実行されたチェック
           - [x] コード分析 (flutter analyze)
           - [x] フォーマットチェック (dart format)
+          - [x] ビルドテスト (APK)
           - $TEST_CHECKBOX 単体テスト (flutter test)
           - $COVERAGE_CHECKBOX カバレッジ測定
           
