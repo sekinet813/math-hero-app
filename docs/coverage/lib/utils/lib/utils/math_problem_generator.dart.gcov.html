@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-06-30 11:59:04</td>
+            <td class="headerValue">2025-06-30 12:05:49</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -124,13 +124,13 @@
 <span id="L62"><span class="lineNum">      62</span> <span class="tlaGNC">           3 :           leftOperand = _random.nextInt(90) + 10; // 10-99</span></span>
 <span id="L63"><span class="lineNum">      63</span> <span class="tlaGNC">           3 :           rightOperand = _random.nextInt(9) + 1; // 1-9</span></span>
 <span id="L64"><span class="lineNum">      64</span>              :         } else {</span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaUNC tlaBgUNC">           0 :           leftOperand = _random.nextInt(9) + 1; // 1-9</span></span>
-<span id="L66"><span class="lineNum">      66</span> <span class="tlaUNC">           0 :           rightOperand = _random.nextInt(90) + 10; // 10-99</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">           3 :           leftOperand = _random.nextInt(9) + 1; // 1-9</span></span>
+<span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">           3 :           rightOperand = _random.nextInt(90) + 10; // 10-99</span></span>
 <span id="L67"><span class="lineNum">      67</span>              :         }</span>
 <span id="L68"><span class="lineNum">      68</span>              :         break;</span>
 <span id="L69"><span class="lineNum">      69</span>              :     }</span>
 <span id="L70"><span class="lineNum">      70</span>              : </span>
-<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC tlaBgGNC">           4 :     return MathProblem(</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">           4 :     return MathProblem(</span></span>
 <span id="L72"><span class="lineNum">      72</span>              :       leftOperand: leftOperand,</span>
 <span id="L73"><span class="lineNum">      73</span>              :       rightOperand: rightOperand,</span>
 <span id="L74"><span class="lineNum">      74</span>              :       operator: '+',</span>
@@ -198,11 +198,11 @@
 <span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">           2 :       case DifficultyLevel.medium:</span></span>
 <span id="L137"><span class="lineNum">     137</span>              :         // 1桁 × 2桁 または 2桁 × 1桁</span>
 <span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">           4 :         if (_random.nextBool()) {</span></span>
-<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">           6 :           leftOperand = _random.nextInt(9) + 1; // 1-9</span></span>
-<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">           6 :           rightOperand = _random.nextInt(20) + 10; // 10-29</span></span>
+<span id="L139"><span class="lineNum">     139</span> <span class="tlaUNC tlaBgUNC">           0 :           leftOperand = _random.nextInt(9) + 1; // 1-9</span></span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaUNC">           0 :           rightOperand = _random.nextInt(20) + 10; // 10-29</span></span>
 <span id="L141"><span class="lineNum">     141</span>              :         } else {</span>
-<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">           3 :           leftOperand = _random.nextInt(20) + 10; // 10-29</span></span>
-<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">           3 :           rightOperand = _random.nextInt(9) + 1; // 1-9</span></span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC tlaBgGNC">           6 :           leftOperand = _random.nextInt(20) + 10; // 10-29</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">           6 :           rightOperand = _random.nextInt(9) + 1; // 1-9</span></span>
 <span id="L144"><span class="lineNum">     144</span>              :         }</span>
 <span id="L145"><span class="lineNum">     145</span>              :         break;</span>
 <span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">           1 :       case DifficultyLevel.hard:</span></span>
