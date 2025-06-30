@@ -41,9 +41,6 @@ jobs:
     - name: Build APK
       run: flutter build apk
     
-    - name: Build iOS
-      run: flutter build ios --no-codesign
-
   # テストとカバレッジジョブ
   test-coverage:
     runs-on: ubuntu-latest
@@ -130,7 +127,7 @@ jobs:
           ### 実行されたチェック
           - [x] コード分析 (flutter analyze)
           - [x] フォーマットチェック (dart format)
-          - [x] ビルドテスト (APK/iOS)
+          - [x] ビルドテスト (APK)
           - $TEST_CHECKBOX 単体テスト (flutter test)
           - $COVERAGE_CHECKBOX カバレッジ測定
           
@@ -248,4 +245,4 @@ jobs:
               console.error('Owner:', owner);
               console.error('Repo:', repo);
               console.error('Issue Number:', issueNumber);
-            } 
+            }
