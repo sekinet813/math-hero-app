@@ -41,6 +41,24 @@ jobs:
     - name: Build APK
       run: flutter build apk
     
+    - name: Get version
+      id: version
+      run: echo "version=$(grep 'version:' pubspec.yaml | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: math-hero-app-${{ steps.version.outputs.version }}
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+    
+    - name: Upload debug APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: build/app/outputs/flutter-apk/app-debug.apk
+        retention-days: 30
+
   # テストとカバレッジジョブ
   test-coverage:
     runs-on: ubuntu-latest
