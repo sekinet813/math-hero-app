@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryHi">97.7&nbsp;%</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
             <td class="headerCovTableEntry">86</td>
-            <td class="headerCovTableEntry">84</td>
+            <td class="headerCovTableEntry">86</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-07-01 10:50:20</td>
+            <td class="headerValue">2025-07-01 13:29:51</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -71,16 +71,16 @@
 <span id="L9"><span class="lineNum">       9</span>              : </span>
 <span id="L10"><span class="lineNum">      10</span>              : /// 計算問題を生成するユーティリティクラス</span>
 <span id="L11"><span class="lineNum">      11</span>              : class MathProblemGenerator {</span>
-<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC tlaBgGNC">          12 :   static final Random _random = Random();</span></span>
+<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC tlaBgGNC">           6 :   static final Random _random = Random();</span></span>
 <span id="L13"><span class="lineNum">      13</span>              : </span>
 <span id="L14"><span class="lineNum">      14</span>              :   /// 指定されたカテゴリと難易度で計算問題を生成</span>
-<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">           4 :   static MathProblem generateProblem({</span></span>
+<span id="L15"><span class="lineNum">      15</span> <span class="tlaGNC">           2 :   static MathProblem generateProblem({</span></span>
 <span id="L16"><span class="lineNum">      16</span>              :     required MathCategory category,</span>
 <span id="L17"><span class="lineNum">      17</span>              :     required DifficultyLevel difficulty,</span>
 <span id="L18"><span class="lineNum">      18</span>              :   }) {</span>
 <span id="L19"><span class="lineNum">      19</span>              :     switch (category) {</span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">           4 :       case MathCategory.addition:</span></span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">           4 :         return _generateAdditionProblem(difficulty);</span></span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">           2 :       case MathCategory.addition:</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">           2 :         return _generateAdditionProblem(difficulty);</span></span>
 <span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">           2 :       case MathCategory.subtraction:</span></span>
 <span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">           1 :         return _generateSubtractionProblem(difficulty);</span></span>
 <span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           2 :       case MathCategory.multiplication:</span></span>
@@ -104,14 +104,14 @@
 <span id="L42"><span class="lineNum">      42</span>              :   }</span>
 <span id="L43"><span class="lineNum">      43</span>              : </span>
 <span id="L44"><span class="lineNum">      44</span>              :   /// 足し算問題を生成</span>
-<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">           4 :   static MathProblem _generateAdditionProblem(DifficultyLevel difficulty) {</span></span>
+<span id="L45"><span class="lineNum">      45</span> <span class="tlaGNC">           2 :   static MathProblem _generateAdditionProblem(DifficultyLevel difficulty) {</span></span>
 <span id="L46"><span class="lineNum">      46</span>              :     int leftOperand, rightOperand;</span>
 <span id="L47"><span class="lineNum">      47</span>              : </span>
 <span id="L48"><span class="lineNum">      48</span>              :     switch (difficulty) {</span>
-<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">           4 :       case DifficultyLevel.easy:</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">           2 :       case DifficultyLevel.easy:</span></span>
 <span id="L50"><span class="lineNum">      50</span>              :         // 1桁 + 1桁（繰り上がりなし）</span>
-<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">          12 :         leftOperand = _random.nextInt(5) + 1; // 1-5</span></span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">          16 :         rightOperand = _random.nextInt(9 - leftOperand) + 1; // 繰り上がりなし</span></span>
+<span id="L51"><span class="lineNum">      51</span> <span class="tlaGNC">           6 :         leftOperand = _random.nextInt(5) + 1; // 1-5</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">           8 :         rightOperand = _random.nextInt(9 - leftOperand) + 1; // 繰り上がりなし</span></span>
 <span id="L53"><span class="lineNum">      53</span>              :         break;</span>
 <span id="L54"><span class="lineNum">      54</span> <span class="tlaGNC">           1 :       case DifficultyLevel.medium:</span></span>
 <span id="L55"><span class="lineNum">      55</span>              :         // 1桁 + 1桁（繰り上がりあり）</span>
@@ -130,13 +130,13 @@
 <span id="L68"><span class="lineNum">      68</span>              :         break;</span>
 <span id="L69"><span class="lineNum">      69</span>              :     }</span>
 <span id="L70"><span class="lineNum">      70</span>              : </span>
-<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">           4 :     return MathProblem(</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">           2 :     return MathProblem(</span></span>
 <span id="L72"><span class="lineNum">      72</span>              :       leftOperand: leftOperand,</span>
 <span id="L73"><span class="lineNum">      73</span>              :       rightOperand: rightOperand,</span>
 <span id="L74"><span class="lineNum">      74</span>              :       operator: '+',</span>
-<span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">           4 :       correctAnswer: leftOperand + rightOperand,</span></span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">           2 :       correctAnswer: leftOperand + rightOperand,</span></span>
 <span id="L76"><span class="lineNum">      76</span>              :       category: 'addition',</span>
-<span id="L77"><span class="lineNum">      77</span> <span class="tlaGNC">           4 :       difficulty: difficulty.name,</span></span>
+<span id="L77"><span class="lineNum">      77</span> <span class="tlaGNC">           2 :       difficulty: difficulty.name,</span></span>
 <span id="L78"><span class="lineNum">      78</span>              :     );</span>
 <span id="L79"><span class="lineNum">      79</span>              :   }</span>
 <span id="L80"><span class="lineNum">      80</span>              : </span>
@@ -198,11 +198,11 @@
 <span id="L136"><span class="lineNum">     136</span> <span class="tlaGNC">           2 :       case DifficultyLevel.medium:</span></span>
 <span id="L137"><span class="lineNum">     137</span>              :         // 1桁 × 2桁 または 2桁 × 1桁</span>
 <span id="L138"><span class="lineNum">     138</span> <span class="tlaGNC">           4 :         if (_random.nextBool()) {</span></span>
-<span id="L139"><span class="lineNum">     139</span> <span class="tlaUNC tlaBgUNC">           0 :           leftOperand = _random.nextInt(9) + 1; // 1-9</span></span>
-<span id="L140"><span class="lineNum">     140</span> <span class="tlaUNC">           0 :           rightOperand = _random.nextInt(20) + 10; // 10-29</span></span>
+<span id="L139"><span class="lineNum">     139</span> <span class="tlaGNC">           3 :           leftOperand = _random.nextInt(9) + 1; // 1-9</span></span>
+<span id="L140"><span class="lineNum">     140</span> <span class="tlaGNC">           3 :           rightOperand = _random.nextInt(20) + 10; // 10-29</span></span>
 <span id="L141"><span class="lineNum">     141</span>              :         } else {</span>
-<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC tlaBgGNC">           6 :           leftOperand = _random.nextInt(20) + 10; // 10-29</span></span>
-<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">           6 :           rightOperand = _random.nextInt(9) + 1; // 1-9</span></span>
+<span id="L142"><span class="lineNum">     142</span> <span class="tlaGNC">           3 :           leftOperand = _random.nextInt(20) + 10; // 10-29</span></span>
+<span id="L143"><span class="lineNum">     143</span> <span class="tlaGNC">           3 :           rightOperand = _random.nextInt(9) + 1; // 1-9</span></span>
 <span id="L144"><span class="lineNum">     144</span>              :         }</span>
 <span id="L145"><span class="lineNum">     145</span>              :         break;</span>
 <span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">           1 :       case DifficultyLevel.hard:</span></span>
