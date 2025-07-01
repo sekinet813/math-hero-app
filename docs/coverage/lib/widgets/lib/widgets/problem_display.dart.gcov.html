@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryHi">91.0&nbsp;%</td>
+            <td class="headerCovTableEntryHi">97.4&nbsp;%</td>
             <td class="headerCovTableEntry">78</td>
-            <td class="headerCovTableEntry">71</td>
+            <td class="headerCovTableEntry">76</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2025-06-30 12:05:49</td>
+            <td class="headerValue">2025-07-01 10:50:20</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -120,20 +120,20 @@
 <span id="L58"><span class="lineNum">      58</span>              : </span>
 <span id="L59"><span class="lineNum">      59</span>              :     // 問題が変わったら選択肢を更新</span>
 <span id="L60"><span class="lineNum">      60</span> <span class="tlaGNC">           8 :     if (widget.problem != oldWidget.problem) {</span></span>
-<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">           1 :       _updateChoices();</span></span>
+<span id="L61"><span class="lineNum">      61</span> <span class="tlaGNC">           2 :       _updateChoices();</span></span>
 <span id="L62"><span class="lineNum">      62</span>              :     }</span>
 <span id="L63"><span class="lineNum">      63</span>              : </span>
 <span id="L64"><span class="lineNum">      64</span>              :     // 正解が表示されたらアニメーション開始</span>
-<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">           4 :     if (widget.showCorrectAnswer &amp;&amp; !oldWidget.showCorrectAnswer) {</span></span>
-<span id="L66"><span class="lineNum">      66</span> <span class="tlaUNC tlaBgUNC">           0 :       _animationController.forward().then((_) {</span></span>
-<span id="L67"><span class="lineNum">      67</span> <span class="tlaUNC">           0 :         _animationController.reverse();</span></span>
-<span id="L68"><span class="lineNum">      68</span> <span class="tlaUNC">           0 :         widget.onAnimationComplete?.call();</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">           5 :     if (widget.showCorrectAnswer &amp;&amp; !oldWidget.showCorrectAnswer) {</span></span>
+<span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">           4 :       _animationController.forward().then((_) {</span></span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">           2 :         _animationController.reverse();</span></span>
+<span id="L68"><span class="lineNum">      68</span> <span class="tlaGNC">           3 :         widget.onAnimationComplete?.call();</span></span>
 <span id="L69"><span class="lineNum">      69</span>              :       });</span>
 <span id="L70"><span class="lineNum">      70</span>              :     }</span>
 <span id="L71"><span class="lineNum">      71</span>              :   }</span>
 <span id="L72"><span class="lineNum">      72</span>              : </span>
 <span id="L73"><span class="lineNum">      73</span>              :   /// 選択肢を更新</span>
-<span id="L74"><span class="lineNum">      74</span> <span class="tlaGNC tlaBgGNC">           3 :   void _updateChoices() {</span></span>
+<span id="L74"><span class="lineNum">      74</span> <span class="tlaGNC">           3 :   void _updateChoices() {</span></span>
 <span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">           6 :     if (widget.problem != null) {</span></span>
 <span id="L76"><span class="lineNum">      76</span> <span class="tlaGNC">          12 :       _choices = widget.problem!.generateChoices();</span></span>
 <span id="L77"><span class="lineNum">      77</span>              :     } else {</span>
@@ -244,12 +244,12 @@
 <span id="L182"><span class="lineNum">     182</span>              :         backgroundColor = Colors.red;</span>
 <span id="L183"><span class="lineNum">     183</span>              :         textColor = Colors.white;</span>
 <span id="L184"><span class="lineNum">     184</span>              :       } else {</span>
-<span id="L185"><span class="lineNum">     185</span> <span class="tlaUNC tlaBgUNC">           0 :         backgroundColor = Theme.of(context).colorScheme.surfaceContainerHighest;</span></span>
-<span id="L186"><span class="lineNum">     186</span> <span class="tlaUNC">           0 :         textColor = Theme.of(context).colorScheme.onSurfaceVariant;</span></span>
+<span id="L185"><span class="lineNum">     185</span> <span class="tlaGNC">           3 :         backgroundColor = Theme.of(context).colorScheme.surfaceContainerHighest;</span></span>
+<span id="L186"><span class="lineNum">     186</span> <span class="tlaGNC">           3 :         textColor = Theme.of(context).colorScheme.onSurfaceVariant;</span></span>
 <span id="L187"><span class="lineNum">     187</span>              :       }</span>
 <span id="L188"><span class="lineNum">     188</span>              :     } else {</span>
 <span id="L189"><span class="lineNum">     189</span>              :       if (isSelected) {</span>
-<span id="L190"><span class="lineNum">     190</span> <span class="tlaGNC tlaBgGNC">           9 :         backgroundColor = Theme.of(context).colorScheme.primary;</span></span>
+<span id="L190"><span class="lineNum">     190</span> <span class="tlaGNC">           3 :         backgroundColor = Theme.of(context).colorScheme.primary;</span></span>
 <span id="L191"><span class="lineNum">     191</span>              :         textColor = Colors.white;</span>
 <span id="L192"><span class="lineNum">     192</span>              :       } else {</span>
 <span id="L193"><span class="lineNum">     193</span> <span class="tlaGNC">           9 :         backgroundColor = Theme.of(context).colorScheme.surfaceContainerHighest;</span></span>
