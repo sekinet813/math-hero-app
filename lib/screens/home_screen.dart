@@ -5,6 +5,7 @@ import '../providers/game_provider.dart';
 import 'game_play_screen.dart';
 import 'reward_ticket_history_screen.dart';
 import 'parent_child_battle_screen.dart';
+import 'battle_setup_screen.dart';
 
 /// ホーム画面
 class HomeScreen extends StatelessWidget {
@@ -42,6 +43,20 @@ class HomeScreen extends StatelessWidget {
               child: const Text('ゲームを始める'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
+            // フレンド対戦ボタン
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BattleSetupScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.people),
+              label: const Text('フレンド対戦'),
+            ),
+            const SizedBox(height: AppConstants.kSpacing16),
             // 親子対戦ボタン
             FilledButton.icon(
               onPressed: () {
@@ -51,8 +66,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                 );
               },
-              icon: Icon(Icons.family_restroom),
-              label: Text('親子対戦'),
+              icon: const Icon(Icons.family_restroom),
+              label: const Text('親子対戦'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 履歴ボタン

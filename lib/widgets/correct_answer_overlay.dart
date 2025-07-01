@@ -1,49 +1,81 @@
 import 'package:flutter/material.dart';
 
-/// 正解オーバーレイウィジェット
-class CorrectAnswerOverlay extends StatelessWidget {
+/// 正解・不正解オーバーレイ（共通）
+class CorrectAnswerOverlay extends StatefulWidget {
   final bool isCorrect;
-  final bool visible;
   final int? correctAnswer;
+  final VoidCallback? onAnimationEnd;
+  final String correctImagePath;
+  final String incorrectImagePath;
 
   const CorrectAnswerOverlay({
     super.key,
     required this.isCorrect,
-    required this.visible,
     this.correctAnswer,
+    this.onAnimationEnd,
+    this.correctImagePath = 'assets/images/hero_correct.png',
+    this.incorrectImagePath = 'assets/images/hero_incorrect.png',
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (!visible) return const SizedBox.shrink();
+  State<CorrectAnswerOverlay> createState() => _CorrectAnswerOverlayState();
+}
 
-    return Container(
-      color: Colors.black.withValues(alpha: 0.3),
+class _CorrectAnswerOverlayState extends State<CorrectAnswerOverlay>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _scale = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
+
+    _controller.forward().then((_) async {
+      await Future.delayed(const Duration(milliseconds: 600));
+      if (mounted) {
+        widget.onAnimationEnd?.call();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black54,
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedScale(
-              scale: visible ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.elasticOut,
+            ScaleTransition(
+              scale: _scale,
               child: Image.asset(
-                isCorrect
-                    ? 'assets/images/hero_correct.png'
-                    : 'assets/images/hero_incorrect.png',
+                widget.isCorrect
+                    ? widget.correctImagePath
+                    : widget.incorrectImagePath,
                 width: 240,
                 height: 240,
                 fit: BoxFit.contain,
               ),
             ),
-            if (!isCorrect && correctAnswer != null) ...[
+            if (!widget.isCorrect && widget.correctAnswer != null) ...[
               const SizedBox(height: 24),
               Text(
-                '正解は $correctAnswer',
+                '正解は ${widget.correctAnswer}',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  shadows: [Shadow(color: Colors.black, blurRadius: 8)],
+                  shadows: [const Shadow(color: Colors.black, blurRadius: 8)],
                 ),
               ),
             ],

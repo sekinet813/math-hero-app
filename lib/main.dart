@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
 import 'providers/game_provider.dart';
+import 'providers/battle_provider.dart';
 import 'utils/theme.dart';
 
 void main() {
@@ -15,7 +16,10 @@ class MathHeroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => GameProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => GameProvider()),
+        ChangeNotifierProvider(create: (_) => BattleProvider()),
+      ],
       child: MaterialApp(
         title: 'マスヒーロー',
         theme: AppTheme.lightTheme,

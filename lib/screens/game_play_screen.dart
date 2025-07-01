@@ -4,13 +4,10 @@ import 'package:provider/provider.dart';
 import '../providers/game_provider.dart';
 import '../utils/constants.dart';
 import '../utils/math_problem_generator.dart';
-import '../widgets/game_header.dart';
-import '../widgets/problem_display.dart';
-import '../widgets/correct_answer_overlay.dart';
 import '../models/reward_ticket.dart';
 import '../utils/reward_ticket_db_helper.dart';
 import '../models/reward_ticket_history.dart';
-// import 'package:audioplayers/audioplayers.dart';
+import 'common_game_screen.dart';
 
 /// ゲームプレイ画面
 class GamePlayScreen extends StatefulWidget {
@@ -39,6 +36,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   // final AudioPlayer _audioPlayer = AudioPlayer();
   bool _showEffect = false;
   bool _historySaved = false;
+  String _userAnswer = '';
 
   @override
   void initState() {
@@ -82,63 +80,44 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ゲーム'),
+        title: const Text('フレンド対戦'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => _showExitDialog(),
+          onPressed: () => _showExitDialog(context),
         ),
       ),
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
-          // ゲームが終了している場合は結果画面を表示
           if (!gameProvider.isGameActive) {
             _timer?.cancel();
             return _buildGameEndScreen(gameProvider);
           }
-
-          return Stack(
-            children: [
-              Column(
-                children: [
-                  // ゲームヘッダー（スコア、時間など）
-                  GameHeader(
-                    correctAnswers: gameProvider.correctAnswers,
-                    totalQuestions: gameProvider.totalQuestions,
-                    remainingTime: gameProvider.remainingTime,
-                    gameMode: gameProvider.gameMode,
-                  ),
-
-                  const SizedBox(height: AppConstants.kSpacing24),
-
-                  // 問題表示
-                  Expanded(
-                    child: ProblemDisplay(
-                      problem: gameProvider.currentProblem,
-                      userAnswer: gameProvider.selectedAnswer?.toString() ?? '',
-                      showCorrectAnswer: gameProvider.showCorrectAnswer,
-                      onAnswerSelected: (answer) {
-                        gameProvider.selectAnswer(answer);
-                        // 選択と同時に回答を送信
-                        gameProvider.submitAnswer(answer);
-                      },
-                      onAnimationComplete: () {},
-                    ),
-                  ),
-
-                  const SizedBox(height: AppConstants.kSpacing16),
-                ],
-              ),
-              // 正解オーバーレイ
-              if (gameProvider.showCorrectAnswer)
-                CorrectAnswerOverlay(
-                  isCorrect:
-                      gameProvider.selectedAnswer ==
-                      gameProvider.currentProblem?.correctAnswer,
-                  visible: true,
-                  correctAnswer: gameProvider.currentProblem?.correctAnswer,
-                ),
-            ],
+          if (!gameProvider.showCorrectAnswer && _userAnswer.isNotEmpty) {
+            // 新しい問題 or 正解表示終了時にリセット
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              setState(() {
+                _userAnswer = '';
+              });
+            });
+          }
+          return CommonGameScreen(
+            currentProblem: gameProvider.currentProblem,
+            userAnswer: gameProvider.selectedAnswer?.toString() ?? '',
+            showCorrectAnswer: gameProvider.showCorrectAnswer,
+            onAnswerSelected: (answer) {
+              gameProvider.selectAnswer(answer);
+              gameProvider.submitAnswer(answer);
+            },
+            correctAnswers: gameProvider.correctAnswers,
+            totalQuestions: gameProvider.totalQuestions,
+            remainingTime: gameProvider.remainingTime,
+            gameMode: gameProvider.gameMode,
+            showOverlay: gameProvider.showCorrectAnswer,
+            isCorrect:
+                gameProvider.selectedAnswer ==
+                gameProvider.currentProblem?.correctAnswer,
+            correctAnswer: gameProvider.currentProblem?.correctAnswer,
           );
         },
       ),
@@ -248,7 +227,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   }
 
   /// ゲーム終了確認ダイアログを表示
-  void _showExitDialog() {
+  void _showExitDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -261,8 +240,8 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
           ),
           FilledButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // ダイアログを閉じる
+              Navigator.of(context).pop(); // 画面を閉じる
             },
             child: const Text('終了'),
           ),

@@ -87,19 +87,12 @@ class _ProblemDisplayState extends State<ProblemDisplay>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.problem == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    // 選択肢が不足している場合は更新
-    if (_choices.length < 4) {
-      _updateChoices();
-    }
-
     return Padding(
-      padding: const EdgeInsets.all(AppConstants.kSpacing24),
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // 問題文
           AnimatedBuilder(
@@ -167,7 +160,8 @@ class _ProblemDisplayState extends State<ProblemDisplay>
 
   /// 選択肢ボタンを構築
   Widget _buildChoiceButton(BuildContext context, int choice) {
-    final isSelected = widget.userAnswer == choice.toString();
+    final isSelected =
+        widget.userAnswer == choice.toString() && !widget.showCorrectAnswer;
     final isCorrect = choice == widget.problem!.correctAnswer;
     final showResult = widget.showCorrectAnswer;
 
@@ -178,7 +172,7 @@ class _ProblemDisplayState extends State<ProblemDisplay>
       if (isCorrect) {
         backgroundColor = Colors.green;
         textColor = Colors.white;
-      } else if (isSelected) {
+      } else if (widget.userAnswer == choice.toString()) {
         backgroundColor = Colors.red;
         textColor = Colors.white;
       } else {
@@ -186,12 +180,11 @@ class _ProblemDisplayState extends State<ProblemDisplay>
         textColor = Theme.of(context).colorScheme.onSurfaceVariant;
       }
     } else {
+      backgroundColor = Theme.of(context).colorScheme.surfaceContainerHighest;
+      textColor = Theme.of(context).colorScheme.onSurfaceVariant;
       if (isSelected) {
         backgroundColor = Theme.of(context).colorScheme.primary;
         textColor = Colors.white;
-      } else {
-        backgroundColor = Theme.of(context).colorScheme.surfaceContainerHighest;
-        textColor = Theme.of(context).colorScheme.onSurfaceVariant;
       }
     }
 
