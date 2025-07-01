@@ -3,6 +3,8 @@ import '../utils/constants.dart';
 import '../utils/math_problem_generator.dart';
 import '../providers/game_provider.dart';
 import 'game_play_screen.dart';
+import 'reward_ticket_history_screen.dart';
+import 'parent_child_battle_screen.dart';
 
 /// ホーム画面
 class HomeScreen extends StatelessWidget {
@@ -40,10 +42,27 @@ class HomeScreen extends StatelessWidget {
               child: const Text('ゲームを始める'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
+            // 親子対戦ボタン
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ParentChildBattleScreen(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.family_restroom),
+              label: Text('親子対戦'),
+            ),
+            const SizedBox(height: AppConstants.kSpacing16),
             // 履歴ボタン
             OutlinedButton(
               onPressed: () {
-                // TODO: 履歴画面に遷移
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const RewardTicketHistoryScreen(),
+                  ),
+                );
               },
               child: const Text('履歴を見る'),
             ),
@@ -51,7 +70,7 @@ class HomeScreen extends StatelessWidget {
             // 設定ボタン
             OutlinedButton(
               onPressed: () {
-                // TODO: 設定画面に遷移
+                // 設定画面の実装予定
               },
               child: const Text('設定'),
             ),

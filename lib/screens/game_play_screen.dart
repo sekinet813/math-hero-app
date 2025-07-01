@@ -7,18 +7,27 @@ import '../utils/math_problem_generator.dart';
 import '../widgets/game_header.dart';
 import '../widgets/problem_display.dart';
 import '../widgets/correct_answer_overlay.dart';
+import '../models/reward_ticket.dart';
+import '../utils/reward_ticket_db_helper.dart';
+import '../models/reward_ticket_history.dart';
+// import 'package:audioplayers/audioplayers.dart';
 
 /// ゲームプレイ画面
 class GamePlayScreen extends StatefulWidget {
   final MathCategory category;
   final DifficultyLevel difficulty;
   final GameMode gameMode;
+  // 親子対戦時のご褒美券（nullなら通常モード）
+  final RewardTicket? parentTicket;
+  final RewardTicket? childTicket;
 
   const GamePlayScreen({
     super.key,
     required this.category,
     required this.difficulty,
     required this.gameMode,
+    this.parentTicket,
+    this.childTicket,
   });
 
   @override
@@ -27,6 +36,9 @@ class GamePlayScreen extends StatefulWidget {
 
 class _GamePlayScreenState extends State<GamePlayScreen> {
   Timer? _timer;
+  // final AudioPlayer _audioPlayer = AudioPlayer();
+  bool _showEffect = false;
+  bool _historySaved = false;
 
   @override
   void initState() {
@@ -53,6 +65,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    // _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -103,7 +116,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
                     child: ProblemDisplay(
                       problem: gameProvider.currentProblem,
                       userAnswer: gameProvider.selectedAnswer?.toString() ?? '',
-                      showCorrectAnswer: false,
+                      showCorrectAnswer: gameProvider.showCorrectAnswer,
                       onAnswerSelected: (answer) {
                         gameProvider.selectAnswer(answer);
                         // 選択と同時に回答を送信
@@ -134,6 +147,22 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
 
   /// ゲーム終了画面を構築
   Widget _buildGameEndScreen(GameProvider gameProvider) {
+    final isParentChild =
+        widget.parentTicket != null && widget.childTicket != null;
+    final bool parentWin = (gameProvider.correctAnswers % 2 == 0); // 仮ロジック
+    final RewardTicket? winnerTicket = isParentChild
+        ? (parentWin ? widget.parentTicket : widget.childTicket)
+        : null;
+    final String winnerName = isParentChild
+        ? (parentWin ? 'parent' : 'child')
+        : '';
+
+    // 履歴保存（初回のみ）
+    if (isParentChild && winnerTicket != null && !_historySaved) {
+      _saveHistory(winnerName, winnerTicket);
+      _historySaved = true;
+    }
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppConstants.kSpacing24),
@@ -163,6 +192,38 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
               style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.center,
             ),
+            if (isParentChild && winnerTicket != null) ...[
+              const SizedBox(height: AppConstants.kSpacing24),
+              AnimatedOpacity(
+                opacity: _showEffect ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 800),
+                child: Column(
+                  children: [
+                    Icon(Icons.auto_awesome, size: 48, color: Colors.amber),
+                    const SizedBox(height: 8),
+                    Text(
+                      '$winnerNameの勝ち！',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    // ご褒美券アイコン（将来的にカスタム画像に変更予定）
+                    Icon(Icons.card_giftcard, size: 40, color: Colors.orange),
+                    const SizedBox(height: 4),
+                    Text(
+                      winnerTicket.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      winnerTicket.description,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: AppConstants.kSpacing24),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -172,6 +233,18 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveHistory(String winner, RewardTicket ticket) async {
+    final history = RewardTicketHistory(
+      winner: winner,
+      ticketId: ticket.id,
+      ticketName: ticket.name,
+      used: false,
+      playedAt: DateTime.now(),
+      usedAt: null,
+    );
+    await RewardTicketDbHelper().insertHistory(history);
   }
 
   /// ゲーム終了確認ダイアログを表示
@@ -196,5 +269,16 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant GamePlayScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // ゲーム終了時に演出・サウンド再生
+    final gameProvider = context.read<GameProvider>();
+    if (!gameProvider.isGameActive && !_showEffect) {
+      setState(() => _showEffect = true);
+      // _audioPlayer.play(AssetSource('sounds/win.mp3'));
+    }
   }
 }
