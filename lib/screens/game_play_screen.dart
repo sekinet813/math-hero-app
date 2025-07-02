@@ -17,6 +17,7 @@ class GamePlayScreen extends StatefulWidget {
   // 親子対戦時のご褒美券（nullなら通常モード）
   final RewardTicket? parentTicket;
   final RewardTicket? childTicket;
+  final int? timeLimit;
 
   const GamePlayScreen({
     super.key,
@@ -25,6 +26,7 @@ class GamePlayScreen extends StatefulWidget {
     required this.gameMode,
     this.parentTicket,
     this.childTicket,
+    this.timeLimit,
   });
 
   @override
@@ -37,26 +39,63 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
   bool _showEffect = false;
   bool _historySaved = false;
   String _userAnswer = '';
+  int _countdown = 3;
+  bool _isCountingDown = false;
 
   @override
   void initState() {
     super.initState();
 
-    // ゲーム開始（既にゲームが開始されていない場合のみ）
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final gameProvider = context.read<GameProvider>();
-      if (!gameProvider.isGameActive) {
-        gameProvider.startGame(
-          category: widget.category,
-          difficulty: widget.difficulty,
-          gameMode: widget.gameMode,
-        );
-
-        // タイマー開始（タイムアタックモードのみ）
-        if (widget.gameMode == GameMode.timeAttack) {
-          _startTimer();
+    // タイムアタック時はカウントダウン演出
+    if (widget.gameMode == GameMode.timeAttack) {
+      setState(() {
+        _isCountingDown = true;
+        _countdown = 3;
+      });
+      _startCountdown();
+    } else {
+      // 通常モードは即開始
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final gameProvider = context.read<GameProvider>();
+        if (!gameProvider.isGameActive) {
+          gameProvider.startGame(
+            category: widget.category,
+            difficulty: widget.difficulty,
+            gameMode: widget.gameMode,
+            timeLimit: widget.timeLimit,
+          );
         }
+      });
+    }
+  }
+
+  void _startCountdown() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
       }
+      setState(() {
+        if (_countdown > 1) {
+          _countdown--;
+        } else if (_countdown == 1) {
+          _countdown = 0;
+        } else {
+          _isCountingDown = false;
+          timer.cancel();
+          // ゲーム開始
+          final gameProvider = context.read<GameProvider>();
+          if (!gameProvider.isGameActive) {
+            gameProvider.startGame(
+              category: widget.category,
+              difficulty: widget.difficulty,
+              gameMode: widget.gameMode,
+              timeLimit: widget.timeLimit,
+            );
+            _startTimer();
+          }
+        }
+      });
     });
   }
 
@@ -78,48 +117,79 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String title;
+    switch (widget.gameMode) {
+      case GameMode.timeAttack:
+        title = 'タイムアタック';
+        break;
+      case GameMode.endless:
+        title = 'エンドレス';
+        break;
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('フレンド対戦'),
+        title: Text(title),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => _showExitDialog(context),
         ),
       ),
-      body: Consumer<GameProvider>(
-        builder: (context, gameProvider, child) {
-          if (!gameProvider.isGameActive) {
-            _timer?.cancel();
-            return _buildGameEndScreen(gameProvider);
-          }
-          if (!gameProvider.showCorrectAnswer && _userAnswer.isNotEmpty) {
-            // 新しい問題 or 正解表示終了時にリセット
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _userAnswer = '';
-              });
-            });
-          }
-          return CommonGameScreen(
-            currentProblem: gameProvider.currentProblem,
-            userAnswer: gameProvider.selectedAnswer?.toString() ?? '',
-            showCorrectAnswer: gameProvider.showCorrectAnswer,
-            onAnswerSelected: (answer) {
-              gameProvider.selectAnswer(answer);
-              gameProvider.submitAnswer(answer);
-            },
-            correctAnswers: gameProvider.correctAnswers,
-            totalQuestions: gameProvider.totalQuestions,
-            remainingTime: gameProvider.remainingTime,
-            gameMode: gameProvider.gameMode,
-            showOverlay: gameProvider.showCorrectAnswer,
-            isCorrect:
-                gameProvider.selectedAnswer ==
-                gameProvider.currentProblem?.correctAnswer,
-            correctAnswer: gameProvider.currentProblem?.correctAnswer,
-          );
-        },
+      body: _isCountingDown
+          ? _buildCountdownUI()
+          : Consumer<GameProvider>(
+              builder: (context, gameProvider, child) {
+                if (!gameProvider.isGameActive) {
+                  _timer?.cancel();
+                  return _buildGameEndScreen(gameProvider);
+                }
+                if (!gameProvider.showCorrectAnswer && _userAnswer.isNotEmpty) {
+                  // 新しい問題 or 正解表示終了時にリセット
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      _userAnswer = '';
+                    });
+                  });
+                }
+                return CommonGameScreen(
+                  currentProblem: gameProvider.currentProblem,
+                  userAnswer: gameProvider.selectedAnswer?.toString() ?? '',
+                  showCorrectAnswer: gameProvider.showCorrectAnswer,
+                  onAnswerSelected: (answer) {
+                    gameProvider.selectAnswer(answer);
+                    gameProvider.submitAnswer(answer);
+                  },
+                  correctAnswers: gameProvider.correctAnswers,
+                  totalQuestions: gameProvider.totalQuestions,
+                  remainingTime: gameProvider.remainingTime,
+                  gameMode: gameProvider.gameMode,
+                  showOverlay: gameProvider.showCorrectAnswer,
+                  isCorrect:
+                      gameProvider.selectedAnswer ==
+                      gameProvider.currentProblem?.correctAnswer,
+                  correctAnswer: gameProvider.currentProblem?.correctAnswer,
+                );
+              },
+            ),
+    );
+  }
+
+  /// カウントダウンUI
+  Widget _buildCountdownUI() {
+    String text;
+    if (_countdown > 0) {
+      text = _countdown.toString();
+    } else {
+      text = 'スタート!';
+    }
+    return Center(
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }
@@ -140,6 +210,72 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
     if (isParentChild && winnerTicket != null && !_historySaved) {
       _saveHistory(winnerName, winnerTicket);
       _historySaved = true;
+    }
+
+    // タイムアタック用リザルト
+    if (widget.gameMode == GameMode.timeAttack) {
+      final int correct = gameProvider.correctAnswers;
+      final int total = gameProvider.totalQuestions;
+      final int time = widget.timeLimit ?? AppConstants.kDefaultTimeLimit;
+      final double accuracy = total > 0 ? (correct / total * 100) : 0.0;
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppConstants.kSpacing24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.emoji_events,
+                size: 80,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: AppConstants.kSpacing24),
+              Text(
+                'タイムアタック終了!',
+                style: Theme.of(context).textTheme.headlineLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppConstants.kSpacing16),
+              Text(
+                '制限時間: $time秒',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppConstants.kSpacing8),
+              Text(
+                '正解数: $correct問',
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppConstants.kSpacing8),
+              Text(
+                '総問題数: $total問',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppConstants.kSpacing8),
+              Text(
+                '正答率: ${accuracy.toStringAsFixed(1)}%',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppConstants.kSpacing24),
+              FilledButton(
+                onPressed: () {
+                  // 再挑戦: 設定画面に戻る
+                  Navigator.of(context).pop();
+                },
+                child: const Text('もう一度挑戦'),
+              ),
+              const SizedBox(height: AppConstants.kSpacing8),
+              OutlinedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('ホームに戻る'),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     return Center(
