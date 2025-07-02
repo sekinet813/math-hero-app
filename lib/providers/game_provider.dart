@@ -46,13 +46,14 @@ class GameProvider extends ChangeNotifier {
     required MathCategory category,
     required DifficultyLevel difficulty,
     required GameMode gameMode,
+    int? timeLimit,
   }) {
     _selectedCategory = category;
     _selectedDifficulty = difficulty;
     _gameMode = gameMode;
     _correctAnswers = 0;
     _totalQuestions = 0;
-    _remainingTime = AppConstants.kDefaultTimeLimit;
+    _remainingTime = timeLimit ?? AppConstants.kDefaultTimeLimit;
     _isGameActive = true;
     _isGamePaused = false;
     _selectedAnswer = null;
@@ -146,7 +147,7 @@ class GameProvider extends ChangeNotifier {
 
       // 正解時のタイマー
       _cancelFeedbackTimer();
-      _feedbackTimer = Timer(const Duration(milliseconds: 1500), () {
+      _feedbackTimer = Timer(const Duration(milliseconds: 800), () {
         if (_isGameActive) {
           _showCorrectAnswer = false;
           _selectedAnswer = null;
@@ -159,7 +160,7 @@ class GameProvider extends ChangeNotifier {
 
       // 不正解時のタイマー
       _cancelFeedbackTimer();
-      _feedbackTimer = Timer(const Duration(milliseconds: 2000), () {
+      _feedbackTimer = Timer(const Duration(milliseconds: 1500), () {
         if (_isGameActive) {
           _showCorrectAnswer = false;
           _selectedAnswer = null;

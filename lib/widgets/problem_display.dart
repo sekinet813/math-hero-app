@@ -50,6 +50,11 @@ class _ProblemDisplayState extends State<ProblemDisplay>
             curve: Curves.easeInOut,
           ),
         );
+
+    // 初回描画時にも選択肢をセット
+    if (widget.problem != null) {
+      _updateChoices();
+    }
   }
 
   @override
