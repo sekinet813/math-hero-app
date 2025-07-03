@@ -24,7 +24,7 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('タイムアタック設定'),
+        title: const Text('チャレンジせってい'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Form(
@@ -36,16 +36,19 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
             children: [
               const SizedBox(height: AppConstants.kSpacing16),
               Text(
-                'タイムアタック',
+                'チャレンジ',
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing8),
               Text(
-                '制限時間内に何問解けるか挑戦しよう！',
-                style: Theme.of(context).textTheme.bodyLarge,
+                'まちがえるまでチャレンジしよう！',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing32),
@@ -71,13 +74,18 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('制限時間', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'じかん',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontSize: 16),
+            ),
             const SizedBox(height: AppConstants.kSpacing16),
             DropdownButtonFormField<int>(
               value: _selectedTimeLimit,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               items: _timeOptions
-                  .map((t) => DropdownMenuItem(value: t, child: Text('$t 秒')))
+                  .map((t) => DropdownMenuItem(value: t, child: Text('$t びょう')))
                   .toList(),
               onChanged: (value) {
                 if (value != null) {
@@ -101,7 +109,12 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('計算カテゴリ', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'けいさんのしゅるい',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontSize: 16),
+            ),
             const SizedBox(height: AppConstants.kSpacing16),
             DropdownButtonFormField<MathCategory>(
               value: _selectedCategory,
@@ -109,19 +122,19 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
               items: const [
                 DropdownMenuItem(
                   value: MathCategory.addition,
-                  child: Text('足し算'),
+                  child: Text('たしざん'),
                 ),
                 DropdownMenuItem(
                   value: MathCategory.subtraction,
-                  child: Text('引き算'),
+                  child: Text('ひきざん'),
                 ),
                 DropdownMenuItem(
                   value: MathCategory.multiplication,
-                  child: Text('掛け算'),
+                  child: Text('かけざん'),
                 ),
                 DropdownMenuItem(
                   value: MathCategory.division,
-                  child: Text('割り算'),
+                  child: Text('わりざん'),
                 ),
               ],
               onChanged: (value) {
@@ -146,7 +159,12 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('難易度', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'むずかしさ',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontSize: 16),
+            ),
             const SizedBox(height: AppConstants.kSpacing16),
             DropdownButtonFormField<DifficultyLevel>(
               value: _selectedDifficulty,

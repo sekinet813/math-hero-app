@@ -122,8 +122,8 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
       case GameMode.timeAttack:
         title = 'タイムアタック';
         break;
-      case GameMode.endless:
-        title = 'エンドレス';
+      case GameMode.challenge:
+        title = 'チャレンジ';
         break;
     }
     return Scaffold(
@@ -212,11 +212,10 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
       _historySaved = true;
     }
 
-    // タイムアタック用リザルト
-    if (widget.gameMode == GameMode.timeAttack) {
+    // チャレンジモード用リザルト
+    if (widget.gameMode == GameMode.challenge) {
       final int correct = gameProvider.correctAnswers;
       final int total = gameProvider.totalQuestions;
-      final int time = widget.timeLimit ?? AppConstants.kDefaultTimeLimit;
       final double accuracy = total > 0 ? (correct / total * 100) : 0.0;
       return Center(
         child: Padding(
@@ -231,32 +230,34 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
               ),
               const SizedBox(height: AppConstants.kSpacing24),
               Text(
-                'タイムアタック終了!',
-                style: Theme.of(context).textTheme.headlineLarge,
+                'チャレンジしゅうりょう!',
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineLarge?.copyWith(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing16),
               Text(
-                '制限時間: $time秒',
-                style: Theme.of(context).textTheme.bodyLarge,
+                'せいかいのかず: $correctもん',
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing8),
               Text(
-                '正解数: $correct問',
-                style: Theme.of(context).textTheme.headlineMedium,
+                'もんだいのかず: $totalもん',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing8),
               Text(
-                '総問題数: $total問',
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppConstants.kSpacing8),
-              Text(
-                '正答率: ${accuracy.toStringAsFixed(1)}%',
-                style: Theme.of(context).textTheme.bodyLarge,
+                'せいとうりつ: ${accuracy.toStringAsFixed(1)}%',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing24),
@@ -265,12 +266,12 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
                   // 再挑戦: 設定画面に戻る
                   Navigator.of(context).pop();
                 },
-                child: const Text('もう一度挑戦'),
+                child: const Text('もういちどチャレンジ'),
               ),
               const SizedBox(height: AppConstants.kSpacing8),
               OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('ホームに戻る'),
+                child: const Text('ホームにもどる'),
               ),
             ],
           ),
@@ -291,20 +292,26 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
             ),
             const SizedBox(height: AppConstants.kSpacing24),
             Text(
-              'ゲーム終了！',
-              style: Theme.of(context).textTheme.headlineLarge,
+              'ゲームしゅうりょう！',
+              style: Theme.of(
+                context,
+              ).textTheme.headlineLarge?.copyWith(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             Text(
-              '正解数: ${gameProvider.correctAnswers}問',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'せいかいのかず: ${gameProvider.correctAnswers}もん',
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppConstants.kSpacing8),
             Text(
-              '総問題数: ${gameProvider.totalQuestions}問',
-              style: Theme.of(context).textTheme.bodyLarge,
+              'もんだいのかず: ${gameProvider.totalQuestions}もん',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               textAlign: TextAlign.center,
             ),
             if (isParentChild && winnerTicket != null) ...[
@@ -317,13 +324,15 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
                     Icon(Icons.auto_awesome, size: 48, color: Colors.amber),
                     const SizedBox(height: 8),
                     Text(
-                      '$winnerNameの勝ち！',
-                      style: Theme.of(context).textTheme.headlineSmall,
+                      '$winnerNameのかち！',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineSmall?.copyWith(fontSize: 14),
                     ),
                     const SizedBox(height: 8),
                     // ご褒美券アイコン（将来的にカスタム画像に変更予定）
                     Icon(Icons.card_giftcard, size: 40, color: Colors.orange),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 8),
                     Text(
                       winnerTicket.name,
                       style: const TextStyle(
@@ -333,7 +342,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
                     ),
                     Text(
                       winnerTicket.description,
-                      style: const TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 14),
                     ),
                   ],
                 ),
@@ -342,7 +351,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
             const SizedBox(height: AppConstants.kSpacing24),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('ホームに戻る'),
+              child: const Text('ホームにもどる'),
             ),
           ],
         ),
@@ -367,8 +376,8 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('ゲームを終了しますか？'),
-        content: const Text('現在のゲームは保存されません。'),
+        title: const Text('ゲームをしゅうりょうしますか？'),
+        content: const Text('げんざいのゲームはほぞんされません。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -379,7 +388,7 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
               Navigator.of(context).pop(); // ダイアログを閉じる
               Navigator.of(context).pop(); // 画面を閉じる
             },
-            child: const Text('終了'),
+            child: const Text('しゅうりょう'),
           ),
         ],
       ),

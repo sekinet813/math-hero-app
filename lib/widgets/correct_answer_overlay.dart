@@ -71,10 +71,11 @@ class _CorrectAnswerOverlayState extends State<CorrectAnswerOverlay>
             if (!widget.isCorrect && widget.correctAnswer != null) ...[
               const SizedBox(height: 24),
               Text(
-                '正解は ${widget.correctAnswer}',
+                'せいかいは ${widget.correctAnswer}',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  fontSize: 20,
                   shadows: [const Shadow(color: Colors.black, blurRadius: 8)],
                 ),
               ),

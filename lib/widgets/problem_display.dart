@@ -121,6 +121,7 @@ class _ProblemDisplayState extends State<ProblemDisplay>
                     widget.problem!.questionText,
                     style: Theme.of(context).textTheme.displayMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      fontSize: 24,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -208,6 +209,7 @@ class _ProblemDisplayState extends State<ProblemDisplay>
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
             color: textColor,
             fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
       ),

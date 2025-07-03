@@ -119,12 +119,12 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                     size: 32,
                     color: isSelected ? Colors.orange : Colors.grey,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     ticket.name,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 16,
                     ),
                     textAlign: TextAlign.center,
                     maxLines: 1,
@@ -133,7 +133,7 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                   Expanded(
                     child: Text(
                       ticket.description,
-                      style: const TextStyle(fontSize: 9),
+                      style: const TextStyle(fontSize: 14),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,

@@ -5,7 +5,7 @@ import '../utils/constants.dart';
 import 'dart:async';
 
 /// ゲームモード
-enum GameMode { timeAttack, endless }
+enum GameMode { timeAttack, challenge }
 
 /// ゲーム状態を管理するProvider
 class GameProvider extends ChangeNotifier {
@@ -165,7 +165,7 @@ class GameProvider extends ChangeNotifier {
           _showCorrectAnswer = false;
           _selectedAnswer = null;
 
-          if (_gameMode == GameMode.endless) {
+          if (_gameMode == GameMode.challenge) {
             endGame();
           } else {
             _generateNextProblem();

@@ -216,7 +216,7 @@ void main() {
         gameProvider.startGame(
           category: MathCategory.addition,
           difficulty: DifficultyLevel.easy,
-          gameMode: GameMode.endless,
+          gameMode: GameMode.challenge,
         );
 
         final initialTime = gameProvider.remainingTime;
@@ -245,7 +245,7 @@ void main() {
         gameProvider.startGame(
           category: MathCategory.addition,
           difficulty: DifficultyLevel.easy,
-          gameMode: GameMode.endless,
+          gameMode: GameMode.challenge,
         );
 
         final problem = gameProvider.currentProblem!;

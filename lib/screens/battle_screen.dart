@@ -146,8 +146,10 @@ class _BattleScreenState extends State<BattleScreen> {
             const SizedBox(height: AppConstants.kSpacing8),
             // 進捗情報
             Text(
-              '${battleProvider.currentPlayerIndex + 1}人目: ${battleProvider.currentQuestionIndex + 1}/${battleProvider.questionsPerPlayer}問目',
-              style: Theme.of(context).textTheme.bodyMedium,
+              '${battleProvider.currentPlayerIndex + 1}にんめ: ${battleProvider.currentQuestionIndex + 1}/${battleProvider.questionsPerPlayer}もんめ',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 14),
             ),
           ],
         ),
@@ -176,13 +178,15 @@ class _BattleScreenState extends State<BattleScreen> {
             name,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: isCurrentPlayer ? FontWeight.bold : FontWeight.normal,
+              fontSize: 14,
             ),
           ),
           Text(
-            '$score点',
+            '$scoreてん',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Theme.of(context).colorScheme.primary,
               fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
         ],
@@ -208,10 +212,11 @@ class _BattleScreenState extends State<BattleScreen> {
         children: [
           // 結果タイトル
           Text(
-            isDraw ? '引き分け！' : '対戦結果',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
+            isDraw ? 'ひきわけ！' : 'たいせんけっか',
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppConstants.kSpacing32),
@@ -229,8 +234,10 @@ class _BattleScreenState extends State<BattleScreen> {
                     ),
                     const SizedBox(height: AppConstants.kSpacing16),
                     Text(
-                      '🏆 勝者 🏆',
-                      style: Theme.of(context).textTheme.titleLarge,
+                      'しょうしゃ',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(fontSize: 16),
                     ),
                     const SizedBox(height: AppConstants.kSpacing8),
                     Text(
@@ -239,6 +246,7 @@ class _BattleScreenState extends State<BattleScreen> {
                           ?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.primary,
+                            fontSize: 16,
                           ),
                     ),
                   ],
@@ -253,7 +261,12 @@ class _BattleScreenState extends State<BattleScreen> {
               padding: const EdgeInsets.all(AppConstants.kSpacing16),
               child: Column(
                 children: [
-                  Text('スコア', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'スコア',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontSize: 16),
+                  ),
                   const SizedBox(height: AppConstants.kSpacing16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -292,7 +305,7 @@ class _BattleScreenState extends State<BattleScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('ホームに戻る'),
+                  child: const Text('ホームにもどる'),
                 ),
               ),
               const SizedBox(width: AppConstants.kSpacing16),
@@ -302,7 +315,7 @@ class _BattleScreenState extends State<BattleScreen> {
                     // 再戦機能（将来的に実装）
                     Navigator.of(context).pop();
                   },
-                  child: const Text('もう一度対戦'),
+                  child: const Text('もういちどたいせん'),
                 ),
               ),
             ],
@@ -325,16 +338,18 @@ class _BattleScreenState extends State<BattleScreen> {
           name,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: isWinner ? FontWeight.bold : FontWeight.normal,
+            fontSize: 14,
           ),
         ),
-        const SizedBox(height: AppConstants.kSpacing4),
+        const SizedBox(height: AppConstants.kSpacing8),
         Text(
-          '$score点',
+          '$scoreてん',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             color: isWinner
                 ? Theme.of(context).colorScheme.primary
                 : Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
+            fontSize: 16,
           ),
         ),
       ],
