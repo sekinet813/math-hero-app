@@ -27,20 +27,24 @@ class HomeScreen extends StatelessWidget {
             // タイトル
             Text(
               'マスヒーロー',
-              style: Theme.of(context).textTheme.headlineLarge,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineLarge?.copyWith(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppConstants.kSpacing8),
             Text(
-              '楽しく計算を学ぼう！',
-              style: Theme.of(context).textTheme.bodyLarge,
+              'たのしくけいさんをまなぼう！',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppConstants.kSpacing32),
             // ゲーム開始ボタン
             FilledButton(
               onPressed: () => _showGameModeDialog(context),
-              child: const Text('ゲームを始める'),
+              child: const Text('ゲームをはじめる'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // フレンド対戦ボタン
@@ -54,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               icon: const Icon(Icons.people),
-              label: const Text('フレンド対戦'),
+              label: const Text('フレンドたいせん'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 親子対戦ボタン
@@ -67,7 +71,7 @@ class HomeScreen extends StatelessWidget {
                 );
               },
               icon: const Icon(Icons.family_restroom),
-              label: const Text('親子対戦'),
+              label: const Text('おやこたいせん'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 履歴ボタン
@@ -79,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('履歴を見る'),
+              child: const Text('れきしをみる'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 設定ボタン
@@ -87,7 +91,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 // 設定画面の実装予定
               },
-              child: const Text('設定'),
+              child: const Text('せってい'),
             ),
           ],
         ),
@@ -100,14 +104,14 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('ゲームモードを選択'),
+        title: const Text('ゲームモードをえらぶ'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.timer),
               title: const Text('タイムアタック'),
-              subtitle: const Text('60秒で何問解けるか挑戦！'),
+              subtitle: const Text('60びょうでなんもんとけるかちょうせん！'),
               onTap: () {
                 Navigator.of(context).pop();
                 _showCategoryDialog(context, GameMode.timeAttack);
@@ -115,11 +119,11 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.all_inclusive),
-              title: const Text('エンドレス'),
-              subtitle: const Text('間違えるまで続けよう！'),
+              title: const Text('チャレンジ'),
+              subtitle: const Text('まちがえるまでつづけよう！'),
               onTap: () {
                 Navigator.of(context).pop();
-                _showCategoryDialog(context, GameMode.endless);
+                _showCategoryDialog(context, GameMode.challenge);
               },
             ),
           ],
@@ -133,13 +137,13 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('計算カテゴリを選択'),
+        title: const Text('けいさんのしゅるいをえらぶ'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.add),
-              title: const Text('足し算'),
+              title: const Text('たしざん'),
               onTap: () {
                 Navigator.of(context).pop();
                 _showDifficultyDialog(context, gameMode, MathCategory.addition);
@@ -147,7 +151,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.remove),
-              title: const Text('引き算'),
+              title: const Text('ひきざん'),
               onTap: () {
                 Navigator.of(context).pop();
                 _showDifficultyDialog(
@@ -159,7 +163,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.close),
-              title: const Text('掛け算'),
+              title: const Text('かけざん'),
               onTap: () {
                 Navigator.of(context).pop();
                 _showDifficultyDialog(
@@ -171,7 +175,7 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.functions),
-              title: const Text('割り算'),
+              title: const Text('わりざん'),
               onTap: () {
                 Navigator.of(context).pop();
                 _showDifficultyDialog(context, gameMode, MathCategory.division);
@@ -192,14 +196,14 @@ class HomeScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('難易度を選択'),
+        title: const Text('むずかしさをえらぶ'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               leading: const Icon(Icons.sentiment_satisfied),
               title: const Text('かんたん'),
-              subtitle: const Text('1桁の計算'),
+              subtitle: const Text('1けたのけいさん'),
               onTap: () {
                 Navigator.of(context).pop();
                 _startGame(context, gameMode, category, DifficultyLevel.easy);
@@ -208,7 +212,7 @@ class HomeScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.sentiment_neutral),
               title: const Text('ふつう'),
-              subtitle: const Text('繰り上がり・繰り下がりあり'),
+              subtitle: const Text('くりあがり・くりさがりあり'),
               onTap: () {
                 Navigator.of(context).pop();
                 _startGame(context, gameMode, category, DifficultyLevel.medium);
@@ -217,7 +221,7 @@ class HomeScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.sentiment_dissatisfied),
               title: const Text('むずかしい'),
-              subtitle: const Text('2桁の計算'),
+              subtitle: const Text('2けたのけいさん'),
               onTap: () {
                 Navigator.of(context).pop();
                 _startGame(context, gameMode, category, DifficultyLevel.hard);

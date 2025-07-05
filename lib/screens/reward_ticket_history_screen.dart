@@ -38,7 +38,7 @@ class _RewardTicketHistoryScreenState extends State<RewardTicketHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ご褒美券の履歴')),
+      appBar: AppBar(title: const Text('ごほうびけんのれきし')),
       body: FutureBuilder<List<RewardTicketHistory>>(
         future: _historyFuture,
         builder: (context, snapshot) {
@@ -46,7 +46,9 @@ class _RewardTicketHistoryScreenState extends State<RewardTicketHistoryScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('履歴がありません'));
+            return const Center(
+              child: Text('れきしがありません', style: TextStyle(fontSize: 16)),
+            );
           }
           final histories = snapshot.data!;
           return ListView.separated(
@@ -59,25 +61,36 @@ class _RewardTicketHistoryScreenState extends State<RewardTicketHistoryScreen> {
                   history.used ? Icons.check_circle : Icons.card_giftcard,
                   color: history.used ? Colors.green : Colors.orange,
                 ),
-                title: Text(history.ticketName),
+                title: Text(
+                  history.ticketName,
+                  style: const TextStyle(fontSize: 16),
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('勝者: ${history.winner == 'parent' ? '親' : '子ども'}'),
                     Text(
-                      '日付: ${history.playedAt.toLocal().toString().split(" ")[0]}',
+                      'しょうしゃ: ${history.winner == 'parent' ? 'おや' : 'こども'}',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      'ひづけ: ${history.playedAt.toLocal().toString().split(" ")[0]}',
+                      style: const TextStyle(fontSize: 14),
                     ),
                     if (history.used && history.usedAt != null)
                       Text(
-                        '使用日: ${history.usedAt!.toLocal().toString().split(" ")[0]}',
+                        'しようび: ${history.usedAt!.toLocal().toString().split(" ")[0]}',
+                        style: const TextStyle(fontSize: 14),
                       ),
                   ],
                 ),
                 trailing: history.used
-                    ? const Text('使用済み', style: TextStyle(color: Colors.grey))
+                    ? const Text(
+                        'しようずみ',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      )
                     : ElevatedButton(
                         onPressed: () => _markAsUsed(history.id!),
-                        child: const Text('使う'),
+                        child: const Text('つかう'),
                       ),
               );
             },

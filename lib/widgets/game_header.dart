@@ -32,7 +32,7 @@ class GameHeader extends StatelessWidget {
             child: _buildStatItem(
               context,
               icon: Icons.check_circle,
-              label: '正解',
+              label: 'せいかい',
               value: '$correctAnswers',
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -43,7 +43,7 @@ class GameHeader extends StatelessWidget {
             child: _buildStatItem(
               context,
               icon: Icons.quiz,
-              label: '問題',
+              label: 'もんだい',
               value: '$totalQuestions',
               color: Theme.of(context).colorScheme.secondary,
             ),
@@ -55,8 +55,8 @@ class GameHeader extends StatelessWidget {
               child: _buildStatItem(
                 context,
                 icon: Icons.timer,
-                label: '残り時間',
-                value: '${remainingTime}s',
+                label: 'のこりじかん',
+                value: '{$remainingTime}びょう',
                 color: remainingTime <= 10
                     ? Theme.of(context).colorScheme.error
                     : Theme.of(context).colorScheme.tertiary,
@@ -78,15 +78,19 @@ class GameHeader extends StatelessWidget {
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
-        const SizedBox(height: AppConstants.kSpacing4),
+        const SizedBox(height: 8),
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             color: color,
             fontWeight: FontWeight.bold,
+            fontSize: 16,
           ),
         ),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 14),
+        ),
       ],
     );
   }

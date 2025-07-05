@@ -56,16 +56,19 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
               const SizedBox(height: AppConstants.kSpacing16),
               // タイトル
               Text(
-                '兄弟・友達対戦',
+                'きょうだい・ともだちたいせん',
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing8),
               Text(
-                '同じ端末で交互に問題を解いて勝負しよう！',
-                style: Theme.of(context).textTheme.bodyLarge,
+                'おなじたんまつでこうごにもんだいをといてしょうぶしよう！',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppConstants.kSpacing32),
@@ -76,7 +79,10 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
               _buildBattleSettingsSection(),
               const Spacer(),
               // 開始ボタン
-              FilledButton(onPressed: _startBattle, child: const Text('対戦を開始')),
+              FilledButton(
+                onPressed: _startBattle,
+                child: const Text('たいせんをかいし'),
+              ),
             ],
           ),
         ),
@@ -92,18 +98,23 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('プレイヤー名', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'プレイヤーめい',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontSize: 16),
+            ),
             const SizedBox(height: AppConstants.kSpacing16),
             TextFormField(
               controller: _player1Controller,
               decoration: const InputDecoration(
-                labelText: '1人目の名前',
+                labelText: '1にんめのなまえ',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return '名前を入力してください';
+                  return 'なまえをにゅうりょくしてください';
                 }
                 return null;
               },
@@ -112,16 +123,16 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
             TextFormField(
               controller: _player2Controller,
               decoration: const InputDecoration(
-                labelText: '2人目の名前',
+                labelText: '2にんめのなまえ',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.person),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return '名前を入力してください';
+                  return 'なまえをにゅうりょくしてください';
                 }
                 if (value.trim() == _player1Controller.text.trim()) {
-                  return '異なる名前を入力してください';
+                  return 'ことなるなまえをにゅうりょくしてください';
                 }
                 return null;
               },
@@ -140,10 +151,20 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('対戦設定', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'たいせんのせってい',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontSize: 16),
+            ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 計算カテゴリ
-            Text('計算カテゴリ', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'けいさんのしゅるい',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontSize: 14),
+            ),
             const SizedBox(height: AppConstants.kSpacing8),
             DropdownButtonFormField<MathCategory>(
               value: _selectedCategory,
@@ -151,19 +172,19 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
               items: const [
                 DropdownMenuItem(
                   value: MathCategory.addition,
-                  child: Text('足し算'),
+                  child: Text('たしざん'),
                 ),
                 DropdownMenuItem(
                   value: MathCategory.subtraction,
-                  child: Text('引き算'),
+                  child: Text('ひきざん'),
                 ),
                 DropdownMenuItem(
                   value: MathCategory.multiplication,
-                  child: Text('掛け算'),
+                  child: Text('かけざん'),
                 ),
                 DropdownMenuItem(
                   value: MathCategory.division,
-                  child: Text('割り算'),
+                  child: Text('わりざん'),
                 ),
               ],
               onChanged: (value) {
@@ -176,7 +197,12 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 難易度
-            Text('難易度', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'むずかしさ',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontSize: 14),
+            ),
             const SizedBox(height: AppConstants.kSpacing8),
             DropdownButtonFormField<DifficultyLevel>(
               value: _selectedDifficulty,
@@ -205,15 +231,20 @@ class _BattleSetupScreenState extends State<BattleSetupScreen> {
             ),
             const SizedBox(height: AppConstants.kSpacing16),
             // 問題数
-            Text('1人あたりの問題数', style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'もんだいのかず',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontSize: 14),
+            ),
             const SizedBox(height: AppConstants.kSpacing8),
             DropdownButtonFormField<int>(
               value: _questionsPerPlayer,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               items: const [
-                DropdownMenuItem(value: 3, child: Text('3問')),
-                DropdownMenuItem(value: 5, child: Text('5問')),
-                DropdownMenuItem(value: 10, child: Text('10問')),
+                DropdownMenuItem(value: 3, child: Text('3もん')),
+                DropdownMenuItem(value: 5, child: Text('5もん')),
+                DropdownMenuItem(value: 10, child: Text('10もん')),
               ],
               onChanged: (value) {
                 if (value != null) {

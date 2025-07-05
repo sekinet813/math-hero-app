@@ -76,7 +76,7 @@ class NumberPad extends StatelessWidget {
   /// 数字ボタンを構築
   Widget _buildNumberButton(BuildContext context, String number) {
     return Padding(
-      padding: const EdgeInsets.all(AppConstants.kSpacing4),
+      padding: const EdgeInsets.all(8),
       child: SizedBox(
         height: 60,
         child: FilledButton(
@@ -88,9 +88,10 @@ class NumberPad extends StatelessWidget {
           ),
           child: Text(
             number,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
           ),
         ),
       ),
@@ -105,7 +106,7 @@ class NumberPad extends StatelessWidget {
     required Color color,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(AppConstants.kSpacing4),
+      padding: const EdgeInsets.all(8),
       child: SizedBox(
         height: 60,
         child: FilledButton(
