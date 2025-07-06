@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import '../models/math_problem.dart';
 import '../utils/constants.dart';
 import '../utils/math_problem_generator.dart';
 import '../utils/sound_manager.dart';
@@ -20,7 +18,6 @@ class GameProvider extends BaseGameProvider {
   int _correctAnswers = 0;
   int _totalQuestions = 0;
   int _remainingTime = AppConstants.kDefaultTimeLimit;
-  bool _isGamePaused = false;
 
   // タイマー管理
   Timer? _answerTimer;
@@ -35,7 +32,7 @@ class GameProvider extends BaseGameProvider {
   int get correctAnswers => _correctAnswers;
   int get totalQuestions => _totalQuestions;
   int get remainingTime => _remainingTime;
-  bool get isGamePaused => _isGamePaused;
+  bool get isGamePaused => isPaused;
   bool get isGameActive => isActive;
 
   /// ゲームを開始
@@ -52,7 +49,7 @@ class GameProvider extends BaseGameProvider {
     _totalQuestions = 0;
     _remainingTime = timeLimit ?? AppConstants.kDefaultTimeLimit;
     setActive(true);
-    _isGamePaused = false;
+    setPaused(false);
 
     generateNewProblem(
       category: _selectedCategory,
@@ -67,20 +64,21 @@ class GameProvider extends BaseGameProvider {
 
   /// ゲームを一時停止
   void pauseGame() {
-    _isGamePaused = true;
+    setPaused(true);
     notifyListeners();
   }
 
   /// ゲームを再開
   void resumeGame() {
-    _isGamePaused = false;
+    setPaused(false);
     notifyListeners();
   }
 
   /// ゲームを終了
   void endGame() {
     setActive(false);
-    _isGamePaused = false;
+    setPaused(false);
+    resetState();
 
     // ゲーム終了音を再生
     _soundManager.playGameEndSound();
@@ -100,7 +98,7 @@ class GameProvider extends BaseGameProvider {
   /// 回答を送信（オーバーライド）
   @override
   void submitAnswer(int answer) {
-    if (!isActive || currentProblem == null || _isGamePaused) return;
+    if (!isActive || currentProblem == null || isPaused) return;
 
     _totalQuestions++; // 問題数を増加
     final isCorrect = answer == currentProblem!.correctAnswer;
@@ -115,7 +113,7 @@ class GameProvider extends BaseGameProvider {
 
   /// 時間を更新（タイムアタックモード用）
   void updateTime() {
-    if (!isActive || _isGamePaused || _gameMode != GameMode.timeAttack) {
+    if (!isActive || isPaused || _gameMode != GameMode.timeAttack) {
       return;
     }
 

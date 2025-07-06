@@ -1,4 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart'; // Added for WidgetsBinding
 
 /// 効果音管理クラス
 class SoundManager {
@@ -20,55 +22,59 @@ class SoundManager {
   /// 効果音が有効かどうかを取得
   bool get isSoundEnabled => _isSoundEnabled;
 
+  /// テスト環境かどうかを判定
+  bool get _isTestMode =>
+      kDebugMode && !WidgetsBinding.instance.isRootWidgetAttached;
+
   /// 正解音を再生
   Future<void> playCorrectSound() async {
-    if (!_isSoundEnabled) return;
+    if (!_isSoundEnabled || _isTestMode) return;
 
     try {
       _correctSoundPlayer ??= AudioPlayer();
       await _correctSoundPlayer!.play(AssetSource('sounds/correct.mp3'));
     } catch (e) {
       // 効果音ファイルが見つからない場合は無視
-      print('正解音の再生に失敗しました: $e');
+      debugPrint('正解音の再生に失敗しました: $e');
     }
   }
 
   /// 不正解音を再生
   Future<void> playIncorrectSound() async {
-    if (!_isSoundEnabled) return;
+    if (!_isSoundEnabled || _isTestMode) return;
 
     try {
       _incorrectSoundPlayer ??= AudioPlayer();
       await _incorrectSoundPlayer!.play(AssetSource('sounds/incorrect.mp3'));
     } catch (e) {
       // 効果音ファイルが見つからない場合は無視
-      print('不正解音の再生に失敗しました: $e');
+      debugPrint('不正解音の再生に失敗しました: $e');
     }
   }
 
   /// ゲーム開始音を再生
   Future<void> playGameStartSound() async {
-    if (!_isSoundEnabled) return;
+    if (!_isSoundEnabled || _isTestMode) return;
 
     try {
       _gameStartSoundPlayer ??= AudioPlayer();
       await _gameStartSoundPlayer!.play(AssetSource('sounds/game_start.mp3'));
     } catch (e) {
       // 効果音ファイルが見つからない場合は無視
-      print('ゲーム開始音の再生に失敗しました: $e');
+      debugPrint('ゲーム開始音の再生に失敗しました: $e');
     }
   }
 
   /// ゲーム終了音を再生
   Future<void> playGameEndSound() async {
-    if (!_isSoundEnabled) return;
+    if (!_isSoundEnabled || _isTestMode) return;
 
     try {
       _gameEndSoundPlayer ??= AudioPlayer();
       await _gameEndSoundPlayer!.play(AssetSource('sounds/game_end.mp3'));
     } catch (e) {
       // 効果音ファイルが見つからない場合は無視
-      print('ゲーム終了音の再生に失敗しました: $e');
+      debugPrint('ゲーム終了音の再生に失敗しました: $e');
     }
   }
 

@@ -11,6 +11,7 @@ abstract class BaseGameProvider extends ChangeNotifier {
   int? _selectedAnswer;
   bool _showCorrectAnswer = false;
   bool _isActive = false;
+  bool _isPaused = false;
 
   // タイマー管理
   Timer? _feedbackTimer;
@@ -23,10 +24,22 @@ abstract class BaseGameProvider extends ChangeNotifier {
   int? get selectedAnswer => _selectedAnswer;
   bool get showCorrectAnswer => _showCorrectAnswer;
   bool get isActive => _isActive;
+  bool get isPaused => _isPaused;
 
   /// アクティブ状態を設定
   void setActive(bool active) {
     _isActive = active;
+  }
+
+  /// 一時停止状態を設定
+  void setPaused(bool paused) {
+    _isPaused = paused;
+  }
+
+  /// 状態をリセット
+  void resetState() {
+    _selectedAnswer = null;
+    _showCorrectAnswer = false;
   }
 
   /// 新しい問題を生成
@@ -69,7 +82,7 @@ abstract class BaseGameProvider extends ChangeNotifier {
 
   /// 選択肢を選択
   void selectAnswer(int answer) {
-    if (!_isActive || _showCorrectAnswer) return;
+    if (!_isActive || _isPaused || _showCorrectAnswer) return;
 
     _selectedAnswer = answer;
     notifyListeners();
@@ -77,7 +90,10 @@ abstract class BaseGameProvider extends ChangeNotifier {
 
   /// 回答を送信（基本処理）
   void submitAnswer(int answer) {
-    if (!_isActive || _currentProblem == null || _showCorrectAnswer) {
+    if (!_isActive ||
+        _isPaused ||
+        _currentProblem == null ||
+        _showCorrectAnswer) {
       return;
     }
 
