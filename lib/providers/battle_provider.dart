@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
 import '../models/battle_match.dart';
-import '../models/math_problem.dart';
 import '../utils/math_problem_generator.dart';
-import 'dart:async';
+import '../utils/sound_manager.dart';
+import 'base_game_provider.dart';
 
 /// 対戦状態を管理するProvider
-class BattleProvider extends ChangeNotifier {
+class BattleProvider extends BaseGameProvider {
   // 対戦設定
   String _player1Name = '';
   String _player2Name = '';
@@ -15,18 +14,14 @@ class BattleProvider extends ChangeNotifier {
 
   // 対戦状態
   BattleMatch? _currentMatch;
-  MathProblem? _currentProblem;
   int _currentPlayerIndex = 0; // 0: player1, 1: player2
   int _player1Score = 0;
   int _player2Score = 0;
   int _currentQuestionIndex = 0;
-  bool _isBattleActive = false;
   bool _isBattleFinished = false;
-  int? _selectedAnswer;
-  bool _showCorrectAnswer = false;
 
-  // タイマー管理
-  Timer? _feedbackTimer;
+  // 効果音管理
+  final SoundManager _soundManager = SoundManager();
 
   // ゲッター
   String get player1Name => _player1Name;
@@ -35,15 +30,11 @@ class BattleProvider extends ChangeNotifier {
   DifficultyLevel get selectedDifficulty => _selectedDifficulty;
   int get questionsPerPlayer => _questionsPerPlayer;
   BattleMatch? get currentMatch => _currentMatch;
-  MathProblem? get currentProblem => _currentProblem;
   int get currentPlayerIndex => _currentPlayerIndex;
   int get player1Score => _player1Score;
   int get player2Score => _player2Score;
   int get currentQuestionIndex => _currentQuestionIndex;
-  bool get isBattleActive => _isBattleActive;
   bool get isBattleFinished => _isBattleFinished;
-  int? get selectedAnswer => _selectedAnswer;
-  bool get showCorrectAnswer => _showCorrectAnswer;
 
   /// プレイヤー名を設定
   void setPlayerNames(String player1Name, String player2Name) {
@@ -72,22 +63,27 @@ class BattleProvider extends ChangeNotifier {
     _player1Score = 0;
     _player2Score = 0;
     _currentQuestionIndex = 0;
-    _isBattleActive = true;
+    setActive(true);
     _isBattleFinished = false;
-    _selectedAnswer = null;
-    _showCorrectAnswer = false;
 
-    _generateNewProblem();
+    generateNewProblem(
+      category: _selectedCategory,
+      difficulty: _selectedDifficulty,
+    );
+
+    // ゲーム開始音を再生
+    _soundManager.playGameStartSound();
+
     notifyListeners();
   }
 
   /// 対戦を終了
   void endBattle() {
-    _isBattleActive = false;
+    setActive(false);
     _isBattleFinished = true;
-    _selectedAnswer = null;
-    _showCorrectAnswer = false;
-    _cancelFeedbackTimer();
+
+    // ゲーム終了音を再生
+    _soundManager.playGameEndSound();
 
     // 対戦結果を作成
     final winner = _getWinner();
@@ -103,57 +99,14 @@ class BattleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 新しい問題を生成
-  void _generateNewProblem() {
-    try {
-      _currentProblem = MathProblemGenerator.generateProblem(
-        category: _selectedCategory,
-        difficulty: _selectedDifficulty,
-      );
-
-      // 問題が生成されなかった場合のフォールバック
-      _currentProblem ??= MathProblem(
-        leftOperand: 1,
-        rightOperand: 1,
-        operator: '+',
-        correctAnswer: 2,
-        category: 'addition',
-        difficulty: 'easy',
-      );
-
-      _selectedAnswer = null;
-      _showCorrectAnswer = false;
-    } catch (e) {
-      // エラーが発生した場合はデフォルトの問題を生成
-      _currentProblem = MathProblem(
-        leftOperand: 1,
-        rightOperand: 1,
-        operator: '+',
-        correctAnswer: 2,
-        category: 'addition',
-        difficulty: 'easy',
-      );
-      _selectedAnswer = null;
-      _showCorrectAnswer = false;
-    }
-  }
-
-  /// 選択肢を選択（4択用）
-  void selectAnswer(int answer) {
-    if (!_isBattleActive || _showCorrectAnswer) return;
-
-    _selectedAnswer = answer;
-    notifyListeners();
-  }
-
-  /// 回答を送信する（4択選択と同時に実行）
+  /// 回答を送信（オーバーライド）
+  @override
   void submitAnswer(int answer) {
-    if (!_isBattleActive || _currentProblem == null || _showCorrectAnswer) {
+    if (!isActive || currentProblem == null || showCorrectAnswer) {
       return;
     }
 
-    _selectedAnswer = answer;
-    final isCorrect = answer == _currentProblem!.correctAnswer;
+    final isCorrect = answer == currentProblem!.correctAnswer;
 
     // スコアを更新
     if (isCorrect) {
@@ -164,20 +117,8 @@ class BattleProvider extends ChangeNotifier {
       }
     }
 
-    _showCorrectAnswer = true;
-
-    // フィードバックタイマー
-    _cancelFeedbackTimer();
-    _feedbackTimer = Timer(const Duration(milliseconds: 1500), () {
-      if (_isBattleActive) {
-        _showCorrectAnswer = false;
-        _selectedAnswer = null;
-        _nextQuestion();
-        notifyListeners();
-      }
-    });
-
-    notifyListeners();
+    // 基本処理を呼び出し
+    super.submitAnswer(answer);
   }
 
   /// 次の問題またはプレイヤーに進む
@@ -196,7 +137,10 @@ class BattleProvider extends ChangeNotifier {
       }
     }
 
-    _generateNewProblem();
+    generateNewProblem(
+      category: _selectedCategory,
+      difficulty: _selectedDifficulty,
+    );
   }
 
   /// 勝者を判定
@@ -204,7 +148,7 @@ class BattleProvider extends ChangeNotifier {
     if (_player1Score > _player2Score) {
       return _player1Name;
     } else if (_player2Score > _player1Score) {
-      return _player1Name;
+      return _player2Name;
     } else {
       return '引き分け';
     }
@@ -220,15 +164,15 @@ class BattleProvider extends ChangeNotifier {
     return _currentPlayerIndex == 0 ? _player1Score : _player2Score;
   }
 
-  /// フィードバックタイマーをキャンセル
-  void _cancelFeedbackTimer() {
-    _feedbackTimer?.cancel();
-    _feedbackTimer = null;
+  /// フィードバック完了時の処理
+  @override
+  void onFeedbackComplete(bool isCorrect) {
+    _nextQuestion();
   }
 
   @override
   void dispose() {
-    _cancelFeedbackTimer();
+    _soundManager.dispose();
     super.dispose();
   }
 }
