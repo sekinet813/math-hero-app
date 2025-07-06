@@ -48,6 +48,9 @@ dependencies:
   # 設定保存
   shared_preferences: ^2.2.2
 
+  # 音声再生
+  audioplayers: ^5.2.1
+
   path: ^1.8.3
 
 dev_dependencies:
@@ -76,6 +79,10 @@ flutter:
   assets:
     - assets/images/hero_correct.png
     - assets/images/hero_incorrect.png
+    - assets/sounds/correct.mp3
+    - assets/sounds/incorrect.mp3
+    - assets/sounds/game_start.mp3
+    - assets/sounds/game_end.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

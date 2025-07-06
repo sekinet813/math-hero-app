@@ -1,9 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 import 'package:math_hero_app/providers/game_provider.dart';
 import 'package:math_hero_app/utils/constants.dart';
 import 'package:math_hero_app/utils/math_problem_generator.dart';
 
 void main() {
+  // Flutterバインディングを初期化
+  WidgetsFlutterBinding.ensureInitialized();
+
   group('GameProvider', () {
     late GameProvider gameProvider;
 
