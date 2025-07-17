@@ -27,6 +27,10 @@
 - 対戦履歴のSQLite保存
 - 履歴画面での使用済み管理
 
+## プライバシーポリシー
+
+アプリのプライバシーポリシーは[こちら](https://sekinet813.github.io/math-hero-app/)でご確認いただけます。
+
 ## 技術スタック
 
 - Flutter 3.32+
@@ -91,3 +95,13 @@ flutter build apk
 # iOS
 flutter build ios
 ```
+
+## ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
+
+## お問い合わせ
+
+- GitHub Issues: [https://github.com/sekinet813/math-hero-app/issues](https://github.com/sekinet813/math-hero-app/issues)
+- プライバシーポリシー: [https://sekinet813.github.io/math-hero-app/](https://sekinet813.github.io/math-hero-app/)
+

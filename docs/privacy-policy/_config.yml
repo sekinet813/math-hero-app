@@ -1,0 +1,26 @@
+---
+layout: default
+title: マスヒーロー - プライバシーポリシー
+description: マスヒーローアプリのプライバシーポリシー
+baseurl: ""
+url: "https://your-username.github.io/math-hero-app"
+
+# Jekyll設定
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# プラグイン
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# 除外ファイル
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/ 

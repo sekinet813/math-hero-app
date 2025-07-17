@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android keystore（署名鍵ファイルは必ずGit管理外にする）
+android/app/upload-keystore.jks
+android/app/*.jks
