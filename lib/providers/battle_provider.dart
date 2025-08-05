@@ -161,7 +161,7 @@ class BattleProvider extends BaseGameProvider {
 
     // バイブレーションを実行
     Vibration.hasVibrator().then((hasVibrator) {
-      if (hasVibrator ?? false) {
+      if (hasVibrator == true) {
         Vibration.vibrate(duration: 200);
       }
     });
