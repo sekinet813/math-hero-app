@@ -3,32 +3,49 @@ import 'package:provider/provider.dart';
 import '../providers/battle_provider.dart';
 import '../utils/constants.dart';
 import '../models/math_problem.dart';
-import '../models/reward_ticket.dart';
-import '../utils/reward_ticket_db_helper.dart';
-import '../models/reward_ticket_history.dart';
 import 'common_game_screen.dart';
 import '../widgets/player_transition_overlay.dart';
 
-/// 親子対戦画面（ご褒美機能付き）
-class ParentChildBattleScreen extends StatefulWidget {
-  final RewardTicket parentTicket;
-  final RewardTicket childTicket;
+/// 汎用的な対戦画面
+class GenericBattleScreen extends StatefulWidget {
+  final String title;
+  final String player1Label;
+  final String player2Label;
+  final String exitDialogTitle;
+  final String exitDialogContent;
+  final String homeButtonText;
+  final String rematchButtonText;
+  final String battleResultTitle;
+  final String winnerLabel;
+  final String scoreLabel;
+  final String drawText;
+  final String vsText;
+  final String currentPlayerText;
 
-  const ParentChildBattleScreen({
+  const GenericBattleScreen({
     super.key,
-    required this.parentTicket,
-    required this.childTicket,
+    required this.title,
+    required this.player1Label,
+    required this.player2Label,
+    required this.exitDialogTitle,
+    required this.exitDialogContent,
+    required this.homeButtonText,
+    required this.rematchButtonText,
+    required this.battleResultTitle,
+    required this.winnerLabel,
+    required this.scoreLabel,
+    required this.drawText,
+    required this.vsText,
+    required this.currentPlayerText,
   });
 
   @override
-  State<ParentChildBattleScreen> createState() =>
-      _ParentChildBattleScreenState();
+  State<GenericBattleScreen> createState() => _GenericBattleScreenState();
 }
 
-class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
+class _GenericBattleScreenState extends State<GenericBattleScreen> {
   String _userAnswer = '';
   MathProblem? _lastProblem;
-  bool _historySaved = false;
 
   @override
   void initState() {
@@ -56,8 +73,8 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('ゲームをしゅうりょうしますか？'),
-        content: const Text('げんざいのゲームはほぞんされません。'),
+        title: Text(widget.exitDialogTitle),
+        content: Text(widget.exitDialogContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -79,7 +96,7 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('おやこたいせん'),
+        title: Text(widget.title),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -153,12 +170,14 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                     battleProvider.player1Name,
                     battleProvider.player1Score,
                     battleProvider.currentPlayerIndex == 0,
-                    widget.parentTicket,
                   ),
                 ),
-                const Text(
-                  'VS',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Text(
+                  widget.vsText,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Expanded(
                   child: _buildPlayerInfo(
@@ -166,7 +185,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                     battleProvider.player2Name,
                     battleProvider.player2Score,
                     battleProvider.currentPlayerIndex == 1,
-                    widget.childTicket,
                   ),
                 ),
               ],
@@ -191,7 +209,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
     String name,
     int score,
     bool isCurrentPlayer,
-    RewardTicket? rewardTicket,
   ) {
     return Container(
       padding: const EdgeInsets.all(AppConstants.kSpacing8),
@@ -218,19 +235,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
               fontSize: 16,
             ),
           ),
-          if (rewardTicket != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              rewardTicket.name,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontSize: 10,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
         ],
       ),
     );
@@ -246,19 +250,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
 
     final isDraw = match.winner == '引き分け';
     final winnerName = isDraw ? null : match.winner;
-    final bool parentWin = match.winner == match.player1Name;
-    final RewardTicket? winnerTicket = isDraw
-        ? null
-        : (parentWin ? widget.parentTicket : widget.childTicket);
-    final String winnerNameForHistory = isDraw
-        ? ''
-        : (parentWin ? 'parent' : 'child');
-
-    // 履歴保存（初回のみ）
-    if (!isDraw && winnerTicket != null && !_historySaved) {
-      _saveHistory(winnerNameForHistory, winnerTicket);
-      _historySaved = true;
-    }
 
     return Padding(
       padding: const EdgeInsets.all(AppConstants.kSpacing16),
@@ -267,7 +258,7 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
         children: [
           // 結果タイトル
           Text(
-            isDraw ? 'ひきわけ！' : 'たいせんけっか',
+            isDraw ? widget.drawText : widget.battleResultTitle,
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -288,7 +279,12 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                       color: Colors.amber,
                     ),
                     const SizedBox(height: AppConstants.kSpacing16),
-                    const Text('しょうしゃ', style: TextStyle(fontSize: 16)),
+                    Text(
+                      widget.winnerLabel,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(fontSize: 16),
+                    ),
                     const SizedBox(height: AppConstants.kSpacing8),
                     Text(
                       winnerName!,
@@ -299,16 +295,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                             fontSize: 16,
                           ),
                     ),
-                    if (winnerTicket != null) ...[
-                      const SizedBox(height: AppConstants.kSpacing8),
-                      Text(
-                        'ごほうび: ${winnerTicket.name}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -321,7 +307,12 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
               padding: const EdgeInsets.all(AppConstants.kSpacing16),
               child: Column(
                 children: [
-                  const Text('スコア', style: TextStyle(fontSize: 16)),
+                  Text(
+                    widget.scoreLabel,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleLarge?.copyWith(fontSize: 16),
+                  ),
                   const SizedBox(height: AppConstants.kSpacing16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -331,11 +322,10 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                         match.player1Name,
                         match.player1Score,
                         match.winner == match.player1Name,
-                        widget.parentTicket,
                       ),
-                      const Text(
-                        'VS',
-                        style: TextStyle(
+                      Text(
+                        widget.vsText,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -345,7 +335,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                         match.player2Name,
                         match.player2Score,
                         match.winner == match.player2Name,
-                        widget.childTicket,
                       ),
                     ],
                   ),
@@ -362,7 +351,7 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('ホームにもどる'),
+                  child: Text(widget.homeButtonText),
                 ),
               ),
               const SizedBox(width: AppConstants.kSpacing16),
@@ -372,7 +361,7 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
                     // 再戦機能（将来的に実装）
                     Navigator.of(context).pop();
                   },
-                  child: const Text('もういちどたいせん'),
+                  child: Text(widget.rematchButtonText),
                 ),
               ),
             ],
@@ -388,7 +377,6 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
     String name,
     int score,
     bool isWinner,
-    RewardTicket? rewardTicket,
   ) {
     return Column(
       children: [
@@ -410,33 +398,7 @@ class _ParentChildBattleScreenState extends State<ParentChildBattleScreen> {
             fontSize: 16,
           ),
         ),
-        if (rewardTicket != null) ...[
-          const SizedBox(height: AppConstants.kSpacing4),
-          Text(
-            rewardTicket.name,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontSize: 10,
-              color: Colors.grey[600],
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
       ],
     );
-  }
-
-  /// 履歴を保存
-  void _saveHistory(String winnerName, RewardTicket ticket) {
-    final history = RewardTicketHistory(
-      winner: winnerName,
-      ticketId: ticket.id,
-      ticketName: ticket.name,
-      used: false,
-      playedAt: DateTime.now(),
-    );
-
-    RewardTicketDbHelper().insertHistory(history);
   }
 }

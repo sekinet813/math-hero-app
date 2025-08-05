@@ -3,9 +3,8 @@ import '../utils/constants.dart';
 import '../utils/math_problem_generator.dart';
 import '../providers/game_provider.dart';
 import 'game_play_screen.dart';
-import 'reward_ticket_history_screen.dart';
-import 'parent_child_battle_screen.dart';
 import 'battle_setup_screen.dart';
+import 'parent_child_battle_setup_screen.dart';
 
 /// ホーム画面
 class HomeScreen extends StatelessWidget {
@@ -66,7 +65,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const ParentChildBattleScreen(),
+                    builder: (context) => const ParentChildBattleSetupScreen(),
                   ),
                 );
               },
@@ -74,7 +73,9 @@ class HomeScreen extends StatelessWidget {
               label: const Text('おやこたいせん'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
+            // TODO: 履歴ボタンを実装する
             // 履歴ボタン
+            /*
             OutlinedButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -86,6 +87,8 @@ class HomeScreen extends StatelessWidget {
               child: const Text('れきしをみる'),
             ),
             const SizedBox(height: AppConstants.kSpacing16),
+            */
+            /*
             // 設定ボタン
             OutlinedButton(
               onPressed: () {
@@ -93,6 +96,7 @@ class HomeScreen extends StatelessWidget {
               },
               child: const Text('せってい'),
             ),
+            */
           ],
         ),
       ),

@@ -91,6 +91,7 @@ flutter test test/models/math_problem_test.dart
 ```bash
 # Android APK
 flutter build apk
+flutter build appbundle
 
 # iOS
 flutter build ios
