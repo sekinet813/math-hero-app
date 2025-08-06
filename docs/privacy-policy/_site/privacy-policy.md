@@ -43,7 +43,7 @@
 
 プライバシーポリシーに関するお問い合わせは、以下の方法でお願いいたします：
 
-- メール: privacy@math-hero-app.com
+- メール: sekinet813@gmail.com
 - GitHub: https://github.com/your-username/math-hero-app
 
 ## 8. プライバシーポリシーの変更
