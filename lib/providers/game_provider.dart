@@ -5,7 +5,7 @@ import 'base_game_provider.dart';
 import 'dart:async';
 
 /// ゲームモード
-enum GameMode { timeAttack, challenge }
+enum GameMode { timeAttack, challenge, battle }
 
 /// ゲーム状態を管理するProvider
 class GameProvider extends BaseGameProvider {

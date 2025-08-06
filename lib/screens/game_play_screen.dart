@@ -125,6 +125,9 @@ class _GamePlayScreenState extends State<GamePlayScreen> {
       case GameMode.challenge:
         title = 'チャレンジ';
         break;
+      case GameMode.battle:
+        title = 'おやこたいせん';
+        break;
     }
     return Scaffold(
       appBar: AppBar(

@@ -2,6 +2,7 @@ import '../models/battle_match.dart';
 import '../utils/math_problem_generator.dart';
 import '../utils/sound_manager.dart';
 import 'base_game_provider.dart';
+import 'package:vibration/vibration.dart';
 
 /// 対戦状態を管理するProvider
 class BattleProvider extends BaseGameProvider {
@@ -23,6 +24,10 @@ class BattleProvider extends BaseGameProvider {
   // 効果音管理
   final SoundManager _soundManager = SoundManager();
 
+  // プレイヤー切り替えアニメーション用
+  bool _isPlayerTransitioning = false;
+  String _transitioningPlayerName = '';
+
   // ゲッター
   String get player1Name => _player1Name;
   String get player2Name => _player2Name;
@@ -35,6 +40,8 @@ class BattleProvider extends BaseGameProvider {
   int get player2Score => _player2Score;
   int get currentQuestionIndex => _currentQuestionIndex;
   bool get isBattleFinished => _isBattleFinished;
+  bool get isPlayerTransitioning => _isPlayerTransitioning;
+  String get transitioningPlayerName => _transitioningPlayerName;
 
   /// プレイヤー名を設定
   void setPlayerNames(String player1Name, String player2Name) {
@@ -133,14 +140,38 @@ class BattleProvider extends BaseGameProvider {
       // 両プレイヤーの問題が終了した場合
       if (_currentPlayerIndex >= 2) {
         endBattle();
-        return;
+        return; // ここで終了
       }
+
+      // プレイヤー切り替えアニメーション開始（ゲーム終了でない場合のみ）
+      _startPlayerTransition();
     }
 
     generateNewProblem(
       category: _selectedCategory,
       difficulty: _selectedDifficulty,
     );
+  }
+
+  /// プレイヤー切り替えアニメーションを開始
+  void _startPlayerTransition() {
+    _isPlayerTransitioning = true;
+    _transitioningPlayerName = getCurrentPlayerName();
+    notifyListeners();
+
+    // バイブレーションを実行
+    Vibration.hasVibrator().then((hasVibrator) {
+      if (hasVibrator == true) {
+        Vibration.vibrate(duration: 200);
+      }
+    });
+  }
+
+  /// プレイヤー切り替えを完了
+  void finishPlayerTransition() {
+    _isPlayerTransitioning = false;
+    _transitioningPlayerName = '';
+    notifyListeners();
   }
 
   /// 勝者を判定
@@ -162,6 +193,16 @@ class BattleProvider extends BaseGameProvider {
   /// 現在のプレイヤーのスコアを取得
   int getCurrentPlayerScore() {
     return _currentPlayerIndex == 0 ? _player1Score : _player2Score;
+  }
+
+  /// 前回のプレイヤー名を取得
+  String getPreviousPlayerName() {
+    return _currentPlayerIndex == 0 ? _player2Name : _player1Name;
+  }
+
+  /// 前回のプレイヤーのスコアを取得
+  int getPreviousPlayerScore() {
+    return _currentPlayerIndex == 0 ? _player2Score : _player1Score;
   }
 
   /// フィードバック完了時の処理

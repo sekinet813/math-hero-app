@@ -57,7 +57,7 @@ class _TimeAttackSetupScreenState extends State<TimeAttackSetupScreen> {
               _buildCategorySection(),
               const SizedBox(height: AppConstants.kSpacing24),
               _buildDifficultySection(),
-              const Spacer(),
+              const SizedBox(height: 32),
               FilledButton(onPressed: _startGame, child: const Text('スタート')),
             ],
           ),

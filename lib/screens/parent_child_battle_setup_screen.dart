@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'generic_battle_setup_screen.dart';
 
-/// 兄弟・友達対戦設定画面
-class BattleSetupScreen extends StatelessWidget {
-  const BattleSetupScreen({super.key});
+/// おやこ対戦設定画面
+class ParentChildBattleSetupScreen extends StatelessWidget {
+  const ParentChildBattleSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GenericBattleSetupScreen(
-      title: 'きょうだい・ともだちたいせん',
-      subtitle: 'おなじたんまつでこうごにもんだいをといてしょうぶしよう！',
-      player1Label: '1にんめのなまえ',
-      player2Label: '2にんめのなまえ',
-      player1DefaultName: 'プレイヤー1',
-      player2DefaultName: 'プレイヤー2',
+      title: 'おやこたいせん',
+      subtitle: 'おやじとこどもでこうごにもんだいをといてしょうぶしよう！',
+      player1Label: 'おやじのなまえ',
+      player2Label: 'こどものなまえ',
+      player1DefaultName: 'おや',
+      player2DefaultName: 'こども',
       battleSettingsTitle: 'たいせんのせってい',
       calculationCategoryLabel: 'けいさんのしゅるい',
       difficultyLabel: 'むずかしさ',
       questionCountLabel: 'もんだいのかず',
       startButtonText: 'たいせんをかいし',
-      exitDialogTitle: 'ゲームを終了しますか？',
-      exitDialogContent: '現在のゲームは保存されません。',
+      exitDialogTitle: 'ゲームをしゅうりょうしますか？',
+      exitDialogContent: 'げんざいのゲームはほぞんされません。',
       homeButtonText: 'ホームにもどる',
       rematchButtonText: 'もういちどたいせん',
       battleResultTitle: 'たいせんけっか',
@@ -29,6 +29,7 @@ class BattleSetupScreen extends StatelessWidget {
       drawText: 'ひきわけ！',
       vsText: 'VS',
       currentPlayerText: 'にんめ',
+      isParentChildBattle: true,
     );
   }
 }
