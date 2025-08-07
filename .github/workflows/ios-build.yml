@@ -2,6 +2,10 @@ name: iOS Build
 
 on:
   workflow_dispatch:  # 手動実行のみ
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
   ios-build:
@@ -24,12 +28,25 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
     
-    - name: Build iOS
-      run: flutter build ios --no-codesign
+    - name: Clean build
+      run: flutter clean
+    
+    - name: Build iOS Release
+      run: flutter build ios --release --no-codesign
     
     - name: Upload iOS build artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ios-build
+        name: ios-release-build
+        path: build/ios/iphoneos/
+        retention-days: 7
+    
+    - name: Build iOS Debug
+      run: flutter build ios --debug --no-codesign
+    
+    - name: Upload iOS debug artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-debug-build
         path: build/ios/iphoneos/
         retention-days: 7 
