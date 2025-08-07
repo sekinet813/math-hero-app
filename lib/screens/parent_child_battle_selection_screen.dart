@@ -27,7 +27,7 @@ class _ParentChildBattleSelectionScreenState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'おやじがえらぶごほうび',
+              'おやがえらぶごほうび',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),

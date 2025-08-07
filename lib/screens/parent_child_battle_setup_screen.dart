@@ -9,8 +9,8 @@ class ParentChildBattleSetupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return GenericBattleSetupScreen(
       title: 'おやこたいせん',
-      subtitle: 'おやじとこどもでこうごにもんだいをといてしょうぶしよう！',
-      player1Label: 'おやじのなまえ',
+      subtitle: 'おやとこどもでこうごにもんだいをといてしょうぶしよう！',
+      player1Label: 'おやのなまえ',
       player2Label: 'こどものなまえ',
       player1DefaultName: 'おや',
       player2DefaultName: 'こども',
