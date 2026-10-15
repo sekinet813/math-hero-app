@@ -101,7 +101,15 @@ flutter build ios
 
 `main` / `develop`へのpushとPRでは静的解析・フォーマット・テストを自動実行します。APKのビルドと保存は、Actionsの`CI`を`Run workflow`で手動実行したときだけです。Release APKのみを`math-hero-app-release-apk`として3日間保存し、Debug APKは生成しません。APKは基本CIの成功後にビルドし、成果物がなければアップロードを失敗させます。
 
-既存のRelease署名設定は`android/key.properties`を必要とし、CIは署名ファイルを配置しません。ファイルがない場合は署名情報が未設定なので、Releaseビルドが署名検証で失敗するか、未署名の成果物になります。未署名APKはそのまま端末へインストールできません。本番配布できるAPKとは扱わず、新しい署名鍵・Secretsは追加していません。ストア提出用AABと他プラットフォームの運用は従来のままです。
+この手動APKジョブだけが`ORG_GRADLE_PROJECT_ciDeviceApk=true`を明示し、既存のAndroid開発用debug署名で実機確認用APKを作ります。ビルドモードはReleaseのままで、Debugビルドは生成しません。成果物はPlay Store提出・本番配布用として扱いません。CIは`android/key.properties`を配置せず、新しい正式署名鍵・Secretsは作成・登録しません。
+
+通常の`flutter build apk --release`とストア提出用`flutter build appbundle`は、この指定を付けずに既存の正式署名設定（`android/key.properties`）を使います。署名ファイルがない場合に自動でdebug署名へフォールバックすることはありません。`ciDeviceApk`は`assembleRelease`だけに限定し、AABや他のGradleタスクへ指定するとビルドを拒否します。他プラットフォームの運用も従来のままです。
+
+ローカルで同じ実機確認用Release APKを作る場合だけ、次を明示します。ストア提出用のコマンドには付けません。
+
+```bash
+ORG_GRADLE_PROJECT_ciDeviceApk=true flutter build apk --release
+```
 
 ## ライセンス
 

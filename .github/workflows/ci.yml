@@ -66,6 +66,9 @@ jobs:
         run: flutter pub get
 
       - name: Build Release APK
+        env:
+          # APK-only opt-in; regular Release/AAB signing remains unchanged.
+          ORG_GRADLE_PROJECT_ciDeviceApk: 'true'
         run: flutter build apk --release
 
       - name: Upload Release APK

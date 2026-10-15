@@ -8,6 +8,18 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Explicit opt-in for the manual CI device-check APK. Never infer this from CI
+// or a missing keystore: regular Release builds must keep their release signing.
+val ciDeviceApk = providers.gradleProperty("ciDeviceApk")
+    .map { it.toBooleanStrict() }
+    .orElse(false)
+    .get()
+val requestedTasks = gradle.startParameter.taskNames.map { it.substringAfterLast(':') }
+check(!ciDeviceApk || (requestedTasks.isNotEmpty() && requestedTasks.all { it == "assembleRelease" })) {
+    "ciDeviceApk is only allowed with assembleRelease for device-check APKs; " +
+        "do not use it for app bundles or other build tasks."
+}
+
 android {
     namespace = "com.mathhero.app"
     compileSdk = flutter.compileSdkVersion
@@ -27,13 +39,13 @@ android {
         create("release") {
             val keystoreProperties = Properties()
             val keystorePropertiesFile = rootProject.file("key.properties")
-            if (keystorePropertiesFile.exists()) {
+            if (!ciDeviceApk && keystorePropertiesFile.exists()) {
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
                 keyAlias = keystoreProperties["keyAlias"] as String?
                 keyPassword = keystoreProperties["keyPassword"] as String?
                 storeFile = file(keystoreProperties["storeFile"] as String?)
                 storePassword = keystoreProperties["storePassword"] as String?
-            } else {
+            } else if (!ciDeviceApk) {
                 // CIなどkey.propertiesが無い場合は署名情報を設定しない
                 println("key.properties not found. Skipping release signing config.")
             }
@@ -52,7 +64,9 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Development signing is limited to the explicitly selected APK
+            // task. The default/store path continues using the release config.
+            signingConfig = signingConfigs.getByName(if (ciDeviceApk) "debug" else "release")
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
