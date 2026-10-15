@@ -90,12 +90,34 @@ flutter test test/models/math_problem_test.dart
 
 ```bash
 # Android APK
-flutter build apk
+flutter build apk --release
 flutter build appbundle
 
-# iOS
-flutter build ios
+# iOS（コンパイル確認用、署名なし）
+flutter build ios --release --no-codesign
 ```
+
+## CIのAPK
+
+`main` / `develop`へのpushとPRでは静的解析・フォーマット・テストを自動実行します。APKのビルドと保存は、Actionsの`CI`を`Run workflow`で手動実行したときだけです。Release APKのみを`math-hero-app-release-apk`として3日間保存し、Debug APKは生成しません。APKは基本CIの成功後にビルドし、成果物がなければアップロードを失敗させます。
+
+この手動APKジョブだけが`ORG_GRADLE_PROJECT_ciDeviceApk=true`を明示し、既存のAndroid開発用debug署名で実機確認用APKを作ります。ビルドモードはReleaseのままで、Debugビルドは生成しません。成果物はPlay Store提出・本番配布用として扱いません。CIは`android/key.properties`を配置せず、新しい正式署名鍵・Secretsは作成・登録しません。
+
+通常の`flutter build apk --release`とストア提出用`flutter build appbundle`は、この指定を付けずに既存の正式署名設定（`android/key.properties`）を使います。署名ファイルがない場合に自動でdebug署名へフォールバックすることはありません。`ciDeviceApk`は`assembleRelease`だけに限定し、AABや他のGradleタスクへ指定するとビルドを拒否します。他プラットフォームの運用も従来のままです。
+
+ローカルで同じ実機確認用Release APKを作る場合だけ、次を明示します。ストア提出用のコマンドには付けません。
+
+```bash
+ORG_GRADLE_PROJECT_ciDeviceApk=true flutter build apk --release
+```
+
+## CIのiOS
+
+Actionsの`iOS Build`を`Run workflow`で手動実行したときだけ、`flutter build ios --release --no-codesign`でReleaseビルドします。PRやmain/developへのpushではiOSビルドを行わず、既存の解析・format・テストは`CI`で自動実行します。このiOS専用workflowはAPKを生成しません。
+
+署名なし`Runner.app`を`ios-release-unsigned.tar.gz`にまとめ、`math-hero-app-ios-release-unsigned` Artifactとして3日間保存します。コンパイル確認用であり、iPhoneへ直接インストールできる署名済みIPAではありません。Debugビルド、証明書・Secretsの追加、App Store／TestFlightへの配信は行いません。
+
+旧`Xcode Cloud Build`は、同じ署名なしReleaseジョブを呼ぶ手動入口です。どちらか一方を実行すればよく、重複実行は不要です。Apple Xcode Cloudへの配信・署名付きarchiveは行いません。Xcodeはrunnerにインストール済みの`latest-stable`を選び、存在しない15.2への固定を外しました。
 
 ## ライセンス
 

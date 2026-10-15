@@ -1,52 +1,48 @@
 name: iOS Build
 
 on:
-  workflow_dispatch:  # 手動実行のみ
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   ios-build:
+    name: Build unsigned iOS Release
+    # Reusable callers must also originate from a manual dispatch.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-latest
-    
+    timeout-minutes: 45
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '15.2'
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.5'
-        channel: 'stable'
-    
-    - name: Install dependencies
-      run: flutter pub get
-    
-    - name: Clean build
-      run: flutter clean
-    
-    - name: Build iOS Release
-      run: flutter build ios --release --no-codesign
-    
-    - name: Upload iOS build artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-release-build
-        path: build/ios/iphoneos/
-        retention-days: 7
-    
-    - name: Build iOS Debug
-      run: flutter build ios --debug --no-codesign
-    
-    - name: Upload iOS debug artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ios-debug-build
-        path: build/ios/iphoneos/
-        retention-days: 7 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show selected Xcode
+        run: xcodebuild -version
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.5'
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS Release without code signing
+        run: flutter build ios --release --no-codesign
+
+      - name: Package unsigned iOS app
+        run: tar -czf build/ios/ios-release-unsigned.tar.gz -C build/ios/iphoneos Runner.app
+
+      - name: Upload unsigned iOS Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: math-hero-app-ios-release-unsigned
+          path: build/ios/ios-release-unsigned.tar.gz
+          if-no-files-found: error
+          retention-days: 3
