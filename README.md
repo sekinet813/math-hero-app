@@ -93,8 +93,8 @@ flutter test test/models/math_problem_test.dart
 flutter build apk --release
 flutter build appbundle
 
-# iOS
-flutter build ios
+# iOS（コンパイル確認用、署名なし）
+flutter build ios --release --no-codesign
 ```
 
 ## CIのAPK
@@ -110,6 +110,14 @@ flutter build ios
 ```bash
 ORG_GRADLE_PROJECT_ciDeviceApk=true flutter build apk --release
 ```
+
+## CIのiOS
+
+Actionsの`iOS Build`を`Run workflow`で手動実行したときだけ、`flutter build ios --release --no-codesign`でReleaseビルドします。PRやmain/developへのpushではiOSビルドを行わず、既存の解析・format・テストは`CI`で自動実行します。このiOS専用workflowはAPKを生成しません。
+
+署名なし`Runner.app`を`ios-release-unsigned.tar.gz`にまとめ、`math-hero-app-ios-release-unsigned` Artifactとして3日間保存します。コンパイル確認用であり、iPhoneへ直接インストールできる署名済みIPAではありません。Debugビルド、証明書・Secretsの追加、App Store／TestFlightへの配信は行いません。
+
+旧`Xcode Cloud Build`は、同じ署名なしReleaseジョブを呼ぶ手動入口です。どちらか一方を実行すればよく、重複実行は不要です。Apple Xcode Cloudへの配信・署名付きarchiveは行いません。Xcodeはrunnerにインストール済みの`latest-stable`を選び、存在しない15.2への固定を外しました。
 
 ## ライセンス
 
