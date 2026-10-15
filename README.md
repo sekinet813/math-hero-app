@@ -99,7 +99,7 @@ flutter build ios --release --no-codesign
 
 ## CIのAPK
 
-`main` / `develop`へのpushとPRでは静的解析・フォーマット・テストを自動実行します。APKのビルドと保存は、Actionsの`CI`を`Run workflow`で手動実行したときだけです。Release APKのみを`math-hero-app-release-apk`として3日間保存し、Debug APKは生成しません。APKは基本CIの成功後にビルドし、成果物がなければアップロードを失敗させます。
+`main` / `develop`へのpushとPRでは静的解析・フォーマット・テストを自動実行します。APKのビルドと保存は、Actionsの`CI`を`Run workflow`で手動実行したときだけです。Release APKだけを未公開Draft Releaseへ直接添付し、Debug APKは生成しません。Actions Artifactは併用せず、Draftの添付は別途削除するまで保持します。[取得手順と検証の制約](docs/apk-draft-releases.md)を参照してください。APKは基本CIの成功後にビルドし、成果物がなければアップロードを失敗させます。
 
 この手動APKジョブだけが`ORG_GRADLE_PROJECT_ciDeviceApk=true`を明示し、既存のAndroid開発用debug署名で実機確認用APKを作ります。ビルドモードはReleaseのままで、Debugビルドは生成しません。成果物はPlay Store提出・本番配布用として扱いません。CIは`android/key.properties`を配置せず、新しい正式署名鍵・Secretsは作成・登録しません。
 

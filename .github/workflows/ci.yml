@@ -38,6 +38,9 @@ jobs:
     
     - name: Run tests
       run: flutter test
+
+    - name: Test Draft Release storage safety
+      run: python3 -m unittest discover -s .github/scripts -p "test_*.py"
     
   build-apk:
     name: Build Release APK
@@ -49,6 +52,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Check Draft Release prerequisites
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/draft_apk_release.py --check
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -71,13 +79,10 @@ jobs:
           ORG_GRADLE_PROJECT_ciDeviceApk: 'true'
         run: flutter build apk --release
 
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: math-hero-app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
-          retention-days: 3
+      - name: Save APK in a new Draft Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/draft_apk_release.py
 
   # テストとカバレッジジョブ
   test-coverage:
